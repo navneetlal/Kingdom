@@ -6,6 +6,7 @@ In case of any problem in the application open an issue here at [https://github.
 
 ## License
 
+Kingdom | Identity and Access Management Service
 Copyright (C) 2021  Navneet Lal Gupta
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 3 of the License.
