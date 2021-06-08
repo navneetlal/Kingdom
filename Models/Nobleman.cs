@@ -46,7 +46,11 @@ namespace KingdomApi.Models
         public String Country { get; set; }
         public UInt32 PostalCode { get; set; }
 
-        public List<Responsibility> Responsibilities { get; set; }
+        public ICollection<Responsibility> Responsibilities { get; set; }
+        public ICollection<Clan> clans { get; set; }
+
+        public UInt64 KingdomId { get; set; }
+        public Kingdom Kingdom { get; set; }
     }
 
     public enum Gender

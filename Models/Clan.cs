@@ -17,7 +17,10 @@ namespace KingdomApi.Models
         
         public String ClanPurpose { get; set; }
 
-        public List<Nobleman> Noblemen { get; set; }
-        public List<Responsibility> Responsibilities { get; set; }
+        public ICollection<Nobleman> Noblemen { get; set; }
+        public ICollection<Responsibility> Responsibilities { get; set; }
+
+        public UInt64 KingdomId { get; set; }
+        public Kingdom Kingdom { get; set; }
     }
 }

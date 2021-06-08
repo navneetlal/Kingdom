@@ -17,6 +17,7 @@ namespace KingdomApi
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<KingdomContext>();
             services.AddControllers();
         }
 

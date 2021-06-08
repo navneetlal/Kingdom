@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
@@ -28,6 +29,12 @@ namespace KingdomApi.Models
 
         [JsonConverter(typeof(StringEnumConverter))]
         public ActionLevel ActionLevel { get; set; } = ActionLevel.Own;
+
+        public ICollection<Clan> Clans { get; set; }
+        public ICollection<Responsibility> Responsibilities { get; set; }
+
+        public UInt64 KingdomId { get; set; }
+        public Kingdom Kingdom { get; set; }
     }
 
     public enum ActionLevel
