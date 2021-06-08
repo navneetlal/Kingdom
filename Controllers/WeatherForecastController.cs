@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
+using KingdomApi.Services;
+
 namespace KingdomApi.Controllers
 {
     [ApiController]
@@ -26,6 +28,8 @@ namespace KingdomApi.Controllers
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {
+            var password = Hash.hashPassword("hello world");
+            _logger.LogInformation(password);
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
