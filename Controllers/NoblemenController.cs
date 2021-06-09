@@ -13,20 +13,20 @@ using KingdomApi.Models;
 namespace KingdomApi.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
-    public class KingdomController : ControllerBase
+    [Route("kingdom/{kingdomId}/[controller]")]
+    public class NoblemenController : ControllerBase
     {
-        private readonly ILogger<KingdomController> _logger;
+        private readonly ILogger<NoblemenController> _logger;
         private readonly KingdomContext _context;
 
-        public KingdomController(ILogger<KingdomController> logger, KingdomContext context)
+        public NoblemenController(ILogger<NoblemenController> logger, KingdomContext context)
         {
             _logger = logger;
             _context = context;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery]GetAllKingdomQuery query)
+        public async Task<IActionResult> GetAll([FromRoute]UInt64 kingdomId , [FromQuery]GetAllNoblemanQuery query)
         {
             if(query.perPage > 100)
             {
@@ -34,18 +34,18 @@ namespace KingdomApi.Controllers
             }
             try
             {
-                var kingdom = _context.Kingdoms;
-                var totalCount = await kingdom.CountAsync();
-                var result = await kingdom
+                var nobleman = _context.Noblemen.Where(nobleman => nobleman.KingdomId.Equals(kingdomId));
+                var totalCount = await nobleman.CountAsync();
+                var result = await nobleman
                     .Skip((query.page - 1) * query.perPage)
                     .Take(query.perPage)
                     .AsNoTracking()
                     .ToListAsync();
-                var response = new ResponseObject<Kingdom>
+                var response = new ResponseObject<Nobleman>
                 { 
                     Status = true,
                     Message = "Success",
-                    Response = new Response<Kingdom>
+                    Response = new Response<Nobleman>
                     {
                         Page = query.page,
                         PerPage = query.perPage,
@@ -62,61 +62,60 @@ namespace KingdomApi.Controllers
         }
 
         [HttpGet]
-        [Route("kingdomId")]
-        public async Task<IActionResult> GetById([FromRoute]UInt64 kingdomId)
+        [Route("{noblemanId}")]
+        public async Task<IActionResult> GetById([FromRoute]UInt64 noblemanId, [FromRoute]UInt64 kingdomId)
         {
-            var kingdom = await _context.Kingdoms
-                .Where(kingdom => kingdom.KingdomId.Equals(kingdomId))
-                .Include(kingdom => kingdom.Clans)
-                .Include(kingdom => kingdom.Noblemen)
+            var nobleman = await _context.Noblemen
+                .Where(nobleman => nobleman.NoblemanId.Equals(noblemanId))
+                .Where(nobleman => nobleman.KingdomId.Equals(kingdomId))
                 .AsNoTracking()
                 .FirstAsync();
-            var response = new ResponseObject<Kingdom>
+            var response = new ResponseObject<Nobleman>
             { 
                 Status = true,
                 Message = "Success",
-                Response = new Response<Kingdom>
+                Response = new Response<Nobleman>
                 {
-                    Results = new List<Kingdom>{ kingdom }
+                    Results = new List<Nobleman>{ nobleman }
                 }
             };
             return new OkObjectResult(response);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]Kingdom kingdom)
+        public async Task<IActionResult> Post([FromBody]Nobleman nobleman)
         {
-            _context.Kingdoms.Add(kingdom);
+            _context.Noblemen.Add(nobleman);
             await _context.SaveChangesAsync();
-            return new CreatedResult(kingdom.KingdomId.ToString(), kingdom);
+            return new CreatedResult(nobleman.NoblemanId.ToString(), nobleman);
         }
 
         [HttpPut]
-        [Route("kingdomId")]
-        public async Task<IActionResult> Put([FromRoute]UInt64 kingdomId, [FromBody]Kingdom kingdom)
+        [Route("{noblemanId}")]
+        public async Task<IActionResult> Put([FromRoute]UInt64 noblemanId, [FromBody]Nobleman nobleman)
         {
-            kingdom.KingdomId = kingdomId;
-            _context.Kingdoms.Add(kingdom);
+            nobleman.NoblemanId = noblemanId;
+            _context.Noblemen.Add(nobleman);
             await _context.SaveChangesAsync();
-            return new OkObjectResult(kingdom);
+            return new OkObjectResult(nobleman);
         }
 
         [HttpDelete]
-        [Route("kingdomId")]
-        public async Task<IActionResult> Delete([FromRoute]UInt64 kingdomId)
+        [Route("{noblemanId}")]
+        public async Task<IActionResult> Delete([FromRoute]UInt64 noblemanId)
         {
-            var kingdom = new Kingdom
+            var nobleman = new Nobleman
             {
-                KingdomId = kingdomId
+                NoblemanId = noblemanId
             };
-            _context.Kingdoms.Remove(kingdom);
+            _context.Noblemen.Remove(nobleman);
             await _context.SaveChangesAsync();
-            return new OkObjectResult(kingdom);
+            return new OkObjectResult(nobleman);
         }
     }
 
     [BindProperties]
-    public class GetAllKingdomQuery
+    public class GetAllNoblemanQuery
     {
         public UInt16 page { get; set; } = 1;
         public UInt16 perPage { get; set; } = 10;

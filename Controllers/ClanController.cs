@@ -13,20 +13,20 @@ using KingdomApi.Models;
 namespace KingdomApi.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
-    public class KingdomController : ControllerBase
+    [Route("kingdom/{kingdomId}/[controller]")]
+    public class ClanController : ControllerBase
     {
-        private readonly ILogger<KingdomController> _logger;
+        private readonly ILogger<ClanController> _logger;
         private readonly KingdomContext _context;
 
-        public KingdomController(ILogger<KingdomController> logger, KingdomContext context)
+        public ClanController(ILogger<ClanController> logger, KingdomContext context)
         {
             _logger = logger;
             _context = context;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery]GetAllKingdomQuery query)
+        public async Task<IActionResult> GetAll([FromRoute]UInt64 kingdomId , [FromQuery]GetAllClanQuery query)
         {
             if(query.perPage > 100)
             {
@@ -34,18 +34,18 @@ namespace KingdomApi.Controllers
             }
             try
             {
-                var kingdom = _context.Kingdoms;
-                var totalCount = await kingdom.CountAsync();
-                var result = await kingdom
+                var clan = _context.Clans.Where(clan => clan.KingdomId.Equals(kingdomId));
+                var totalCount = await clan.CountAsync();
+                var result = await clan
                     .Skip((query.page - 1) * query.perPage)
                     .Take(query.perPage)
                     .AsNoTracking()
                     .ToListAsync();
-                var response = new ResponseObject<Kingdom>
+                var response = new ResponseObject<Clan>
                 { 
                     Status = true,
                     Message = "Success",
-                    Response = new Response<Kingdom>
+                    Response = new Response<Clan>
                     {
                         Page = query.page,
                         PerPage = query.perPage,
@@ -62,61 +62,61 @@ namespace KingdomApi.Controllers
         }
 
         [HttpGet]
-        [Route("kingdomId")]
-        public async Task<IActionResult> GetById([FromRoute]UInt64 kingdomId)
+        [Route("{clanId}")]
+        public async Task<IActionResult> GetById([FromRoute]UInt64 clanId, [FromRoute]UInt64 kingdomId)
         {
-            var kingdom = await _context.Kingdoms
-                .Where(kingdom => kingdom.KingdomId.Equals(kingdomId))
-                .Include(kingdom => kingdom.Clans)
-                .Include(kingdom => kingdom.Noblemen)
+            var clan = await _context.Clans
+                .Where(clan => clan.ClanId.Equals(clanId))
+                .Where(clan => clan.KingdomId.Equals(kingdomId))
+                .Include(clan => clan.Noblemen)
                 .AsNoTracking()
                 .FirstAsync();
-            var response = new ResponseObject<Kingdom>
+            var response = new ResponseObject<Clan>
             { 
                 Status = true,
                 Message = "Success",
-                Response = new Response<Kingdom>
+                Response = new Response<Clan>
                 {
-                    Results = new List<Kingdom>{ kingdom }
+                    Results = new List<Clan>{ clan }
                 }
             };
             return new OkObjectResult(response);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]Kingdom kingdom)
+        public async Task<IActionResult> Post([FromBody]Clan clan)
         {
-            _context.Kingdoms.Add(kingdom);
+            _context.Clans.Add(clan);
             await _context.SaveChangesAsync();
-            return new CreatedResult(kingdom.KingdomId.ToString(), kingdom);
+            return new CreatedResult(clan.ClanId.ToString(), clan);
         }
 
         [HttpPut]
-        [Route("kingdomId")]
-        public async Task<IActionResult> Put([FromRoute]UInt64 kingdomId, [FromBody]Kingdom kingdom)
+        [Route("{clanId}")]
+        public async Task<IActionResult> Put([FromRoute]UInt64 clanId, [FromBody]Clan clan)
         {
-            kingdom.KingdomId = kingdomId;
-            _context.Kingdoms.Add(kingdom);
+            clan.ClanId = clanId;
+            _context.Clans.Add(clan);
             await _context.SaveChangesAsync();
-            return new OkObjectResult(kingdom);
+            return new OkObjectResult(clan);
         }
 
         [HttpDelete]
-        [Route("kingdomId")]
-        public async Task<IActionResult> Delete([FromRoute]UInt64 kingdomId)
+        [Route("{clanId}")]
+        public async Task<IActionResult> Delete([FromRoute]UInt64 clanId)
         {
-            var kingdom = new Kingdom
+            var clan = new Clan
             {
-                KingdomId = kingdomId
+                ClanId = clanId
             };
-            _context.Kingdoms.Remove(kingdom);
+            _context.Clans.Remove(clan);
             await _context.SaveChangesAsync();
-            return new OkObjectResult(kingdom);
+            return new OkObjectResult(clan);
         }
     }
 
     [BindProperties]
-    public class GetAllKingdomQuery
+    public class GetAllClanQuery
     {
         public UInt16 page { get; set; } = 1;
         public UInt16 perPage { get; set; } = 10;
