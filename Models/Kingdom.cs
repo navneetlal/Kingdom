@@ -9,7 +9,8 @@ namespace KingdomApi.Models
     public class Kingdom
     {
         [Key]
-        public UInt64 KingdomId { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public UInt32 KingdomId { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "{0} length must be between {2} and {1}.", MinimumLength = 2)]

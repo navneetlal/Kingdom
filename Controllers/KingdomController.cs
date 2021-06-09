@@ -63,7 +63,7 @@ namespace KingdomApi.Controllers
 
         [HttpGet]
         [Route("kingdomId")]
-        public async Task<IActionResult> GetById([FromRoute]UInt64 kingdomId)
+        public async Task<IActionResult> GetById([FromRoute]UInt32 kingdomId)
         {
             var kingdom = await _context.Kingdoms
                 .Where(kingdom => kingdom.KingdomId.Equals(kingdomId))
@@ -93,7 +93,7 @@ namespace KingdomApi.Controllers
 
         [HttpPut]
         [Route("kingdomId")]
-        public async Task<IActionResult> Put([FromRoute]UInt64 kingdomId, [FromBody]Kingdom kingdom)
+        public async Task<IActionResult> Put([FromRoute]UInt32 kingdomId, [FromBody]Kingdom kingdom)
         {
             kingdom.KingdomId = kingdomId;
             _context.Kingdoms.Add(kingdom);
@@ -103,7 +103,7 @@ namespace KingdomApi.Controllers
 
         [HttpDelete]
         [Route("kingdomId")]
-        public async Task<IActionResult> Delete([FromRoute]UInt64 kingdomId)
+        public async Task<IActionResult> Delete([FromRoute]UInt32 kingdomId)
         {
             var kingdom = new Kingdom
             {

@@ -13,7 +13,8 @@ namespace KingdomApi.Models
     public class Responsibility
     {
         [Key]
-        public UInt64 ResponsibilityId { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public UInt32 ResponsibilityId { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "{0} length must be between {2} and {1}.", MinimumLength = 2)]
@@ -33,7 +34,7 @@ namespace KingdomApi.Models
         public ICollection<Clan> Clans { get; set; }
         public ICollection<Responsibility> Responsibilities { get; set; }
 
-        public UInt64 KingdomId { get; set; }
+        public UInt32 KingdomId { get; set; }
         public Kingdom Kingdom { get; set; }
     }
 

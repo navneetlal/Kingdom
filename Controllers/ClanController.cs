@@ -26,7 +26,7 @@ namespace KingdomApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromRoute]UInt64 kingdomId , [FromQuery]GetAllClanQuery query)
+        public async Task<IActionResult> GetAll([FromRoute]UInt32 kingdomId , [FromQuery]GetAllClanQuery query)
         {
             if(query.perPage > 100)
             {
@@ -93,7 +93,7 @@ namespace KingdomApi.Controllers
 
         [HttpPut]
         [Route("{clanId}")]
-        public async Task<IActionResult> Put([FromRoute]UInt64 clanId, [FromBody]Clan clan)
+        public async Task<IActionResult> Put([FromRoute]UInt32 clanId, [FromBody]Clan clan)
         {
             clan.ClanId = clanId;
             _context.Clans.Add(clan);
@@ -103,7 +103,7 @@ namespace KingdomApi.Controllers
 
         [HttpDelete]
         [Route("{clanId}")]
-        public async Task<IActionResult> Delete([FromRoute]UInt64 clanId)
+        public async Task<IActionResult> Delete([FromRoute]UInt32 clanId)
         {
             var clan = new Clan
             {

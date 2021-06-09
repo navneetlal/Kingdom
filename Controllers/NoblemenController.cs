@@ -26,7 +26,7 @@ namespace KingdomApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromRoute]UInt64 kingdomId , [FromQuery]GetAllNoblemanQuery query)
+        public async Task<IActionResult> GetAll([FromRoute]UInt32 kingdomId , [FromQuery]GetAllNoblemanQuery query)
         {
             if(query.perPage > 100)
             {
@@ -63,7 +63,7 @@ namespace KingdomApi.Controllers
 
         [HttpGet]
         [Route("{noblemanId}")]
-        public async Task<IActionResult> GetById([FromRoute]UInt64 noblemanId, [FromRoute]UInt64 kingdomId)
+        public async Task<IActionResult> GetById([FromRoute]UInt32 noblemanId, [FromRoute]UInt32 kingdomId)
         {
             var nobleman = await _context.Noblemen
                 .Where(nobleman => nobleman.NoblemanId.Equals(noblemanId))
@@ -92,7 +92,7 @@ namespace KingdomApi.Controllers
 
         [HttpPut]
         [Route("{noblemanId}")]
-        public async Task<IActionResult> Put([FromRoute]UInt64 noblemanId, [FromBody]Nobleman nobleman)
+        public async Task<IActionResult> Put([FromRoute]UInt32 noblemanId, [FromBody]Nobleman nobleman)
         {
             nobleman.NoblemanId = noblemanId;
             _context.Noblemen.Add(nobleman);
@@ -102,7 +102,7 @@ namespace KingdomApi.Controllers
 
         [HttpDelete]
         [Route("{noblemanId}")]
-        public async Task<IActionResult> Delete([FromRoute]UInt64 noblemanId)
+        public async Task<IActionResult> Delete([FromRoute]UInt32 noblemanId)
         {
             var nobleman = new Nobleman
             {

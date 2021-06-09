@@ -13,7 +13,8 @@ namespace KingdomApi.Models
     public class Nobleman
     {
         [Key]
-        public UInt64 NoblemanId { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public UInt32 NoblemanId { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "{0} length must be between {2} and {1}.", MinimumLength = 2)]
@@ -49,7 +50,7 @@ namespace KingdomApi.Models
         public ICollection<Responsibility> Responsibilities { get; set; }
         public ICollection<Clan> clans { get; set; }
 
-        public UInt64 KingdomId { get; set; }
+        public UInt32 KingdomId { get; set; }
         public Kingdom Kingdom { get; set; }
     }
 

@@ -26,7 +26,7 @@ namespace KingdomApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromRoute]UInt64 kingdomId , [FromQuery]GetAllResponsibilityQuery query)
+        public async Task<IActionResult> GetAll([FromRoute]UInt32 kingdomId , [FromQuery]GetAllResponsibilityQuery query)
         {
             if(query.perPage > 100)
             {
@@ -64,7 +64,7 @@ namespace KingdomApi.Controllers
 
         [HttpGet]
         [Route("{responsibilityId}")]
-        public async Task<IActionResult> GetById([FromRoute]UInt64 responsibilityId, [FromRoute]UInt64 kingdomId)
+        public async Task<IActionResult> GetById([FromRoute]UInt32 responsibilityId, [FromRoute]UInt32 kingdomId)
         {
             var responsibility = await _context.Responsibilities
                 .Where(responsibility => responsibility.ResponsibilityId.Equals(responsibilityId))
@@ -93,7 +93,7 @@ namespace KingdomApi.Controllers
 
         [HttpPut]
         [Route("{responsibilityId}")]
-        public async Task<IActionResult> Put([FromRoute]UInt64 responsibilityId, [FromBody]Responsibility responsibility)
+        public async Task<IActionResult> Put([FromRoute]UInt32 responsibilityId, [FromBody]Responsibility responsibility)
         {
             responsibility.ResponsibilityId = responsibilityId;
             _context.Responsibilities.Add(responsibility);
@@ -103,7 +103,7 @@ namespace KingdomApi.Controllers
 
         [HttpDelete]
         [Route("{responsibilityId}")]
-        public async Task<IActionResult> Delete([FromRoute]UInt64 responsibilityId)
+        public async Task<IActionResult> Delete([FromRoute]UInt32 responsibilityId)
         {
             var responsibility = new Responsibility
             {
