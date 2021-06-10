@@ -3,7 +3,7 @@ using KingdomApi.Models;
 
 namespace KingdomApi
 {
-    public class KingdomContext: DbContext
+    public class KingdomContext : DbContext
     {
         public DbSet<Kingdom> Kingdoms { get; set; }
         public DbSet<Clan> Clans { get; set; }

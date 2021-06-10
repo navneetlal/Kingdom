@@ -26,9 +26,9 @@ namespace KingdomApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromRoute]UInt32 kingdomId , [FromQuery]GetAllClanQuery query)
+        public async Task<IActionResult> GetAll([FromRoute] UInt32 kingdomId, [FromQuery] GetAllClanQuery query)
         {
-            if(query.perPage > 100)
+            if (query.perPage > 100)
             {
                 return StatusCode(StatusCodes.Status413PayloadTooLarge);
             }
@@ -42,7 +42,7 @@ namespace KingdomApi.Controllers
                     .AsNoTracking()
                     .ToListAsync();
                 var response = new ResponseObject<Clan>
-                { 
+                {
                     Status = true,
                     Message = "Success",
                     Response = new Response<Clan>
@@ -56,14 +56,14 @@ namespace KingdomApi.Controllers
                 return new OkObjectResult(response);
             }
             catch (System.Exception)
-            {   
+            {
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
         [HttpGet]
         [Route("{clanId}")]
-        public async Task<IActionResult> GetById([FromRoute]UInt64 clanId, [FromRoute]UInt64 kingdomId)
+        public async Task<IActionResult> GetById([FromRoute] UInt64 clanId, [FromRoute] UInt64 kingdomId)
         {
             var clan = await _context.Clans
                 .Where(clan => clan.ClanId.Equals(clanId))
@@ -72,19 +72,19 @@ namespace KingdomApi.Controllers
                 .AsNoTracking()
                 .FirstAsync();
             var response = new ResponseObject<Clan>
-            { 
+            {
                 Status = true,
                 Message = "Success",
                 Response = new Response<Clan>
                 {
-                    Results = new List<Clan>{ clan }
+                    Results = new List<Clan> { clan }
                 }
             };
             return new OkObjectResult(response);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]Clan clan)
+        public async Task<IActionResult> Post([FromBody] Clan clan)
         {
             _context.Clans.Add(clan);
             await _context.SaveChangesAsync();
@@ -93,7 +93,7 @@ namespace KingdomApi.Controllers
 
         [HttpPut]
         [Route("{clanId}")]
-        public async Task<IActionResult> Put([FromRoute]UInt32 clanId, [FromBody]Clan clan)
+        public async Task<IActionResult> Put([FromRoute] UInt32 clanId, [FromBody] Clan clan)
         {
             clan.ClanId = clanId;
             _context.Clans.Add(clan);
@@ -103,7 +103,7 @@ namespace KingdomApi.Controllers
 
         [HttpDelete]
         [Route("{clanId}")]
-        public async Task<IActionResult> Delete([FromRoute]UInt32 clanId)
+        public async Task<IActionResult> Delete([FromRoute] UInt32 clanId)
         {
             var clan = new Clan
             {

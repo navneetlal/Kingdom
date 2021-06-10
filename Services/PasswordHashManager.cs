@@ -20,12 +20,12 @@ namespace KingdomApi.Services
             var hash = Argon2Hash(passwordByteArray, salt);
 
             bool isEncryptionEnabled;
-            if(!Boolean.TryParse(Environment.GetEnvironmentVariable("ENCRYPT_PASSWORD"), out isEncryptionEnabled))
+            if (!Boolean.TryParse(Environment.GetEnvironmentVariable("ENCRYPT_PASSWORD"), out isEncryptionEnabled))
             {
                 isEncryptionEnabled = false;
             }
 
-            if(isEncryptionEnabled)
+            if (isEncryptionEnabled)
             {
                 string key = Environment.GetEnvironmentVariable("ENCRYPTION_KEY") ?? @"=z7W%agh0^UuX+^Kvr#PnY=F";
                 string encryptedHash = Encrypt(hash, Encoding.UTF8.GetBytes(key));
@@ -49,7 +49,7 @@ namespace KingdomApi.Services
             var hashedPassword = Argon2Hash(passwordByteArray, saltByteArray);
             byte[] hash;
 
-            if(hashedAndSaltedArray.Length.Equals(2))
+            if (hashedAndSaltedArray.Length.Equals(2))
             {
                 hash = Encoding.UTF8.GetBytes(hashedAndSaltedArray[1]);
             }
@@ -106,12 +106,6 @@ namespace KingdomApi.Services
             }
         }
 
-        /// <summary>
-        /// Compares two byte arrays for equality. The method is specifically written so that the loop is not optimized.
-        /// </summary>
-        /// <param name="a">A Byte Array</param>
-        /// <param name="b">A Byte Array</param>
-        /// <returns>True if param1 and param2 are equal else false.</returns>
         private static bool ByteArraysEqual(byte[] a, byte[] b)
         {
             if (a == null && b == null)

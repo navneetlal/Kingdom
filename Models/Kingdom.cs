@@ -15,7 +15,7 @@ namespace KingdomApi.Models
         [Required]
         [StringLength(100, ErrorMessage = "{0} length must be between {2} and {1}.", MinimumLength = 2)]
         public String KingdomName { get; set; }
-        
+
         public String Description { get; set; }
 
         public List<Clan> Clans { get; set; }

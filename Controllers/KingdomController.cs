@@ -26,9 +26,9 @@ namespace KingdomApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery]GetAllKingdomQuery query)
+        public async Task<IActionResult> GetAll([FromQuery] GetAllKingdomQuery query)
         {
-            if(query.perPage > 100)
+            if (query.perPage > 100)
             {
                 return StatusCode(StatusCodes.Status413PayloadTooLarge);
             }
@@ -42,7 +42,7 @@ namespace KingdomApi.Controllers
                     .AsNoTracking()
                     .ToListAsync();
                 var response = new ResponseObject<Kingdom>
-                { 
+                {
                     Status = true,
                     Message = "Success",
                     Response = new Response<Kingdom>
@@ -56,14 +56,14 @@ namespace KingdomApi.Controllers
                 return new OkObjectResult(response);
             }
             catch (System.Exception)
-            {   
+            {
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
         [HttpGet]
         [Route("kingdomId")]
-        public async Task<IActionResult> GetById([FromRoute]UInt32 kingdomId)
+        public async Task<IActionResult> GetById([FromRoute] UInt32 kingdomId)
         {
             var kingdom = await _context.Kingdoms
                 .Where(kingdom => kingdom.KingdomId.Equals(kingdomId))
@@ -72,19 +72,19 @@ namespace KingdomApi.Controllers
                 .AsNoTracking()
                 .FirstAsync();
             var response = new ResponseObject<Kingdom>
-            { 
+            {
                 Status = true,
                 Message = "Success",
                 Response = new Response<Kingdom>
                 {
-                    Results = new List<Kingdom>{ kingdom }
+                    Results = new List<Kingdom> { kingdom }
                 }
             };
             return new OkObjectResult(response);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]Kingdom kingdom)
+        public async Task<IActionResult> Post([FromBody] Kingdom kingdom)
         {
             _context.Kingdoms.Add(kingdom);
             await _context.SaveChangesAsync();
@@ -93,7 +93,7 @@ namespace KingdomApi.Controllers
 
         [HttpPut]
         [Route("kingdomId")]
-        public async Task<IActionResult> Put([FromRoute]UInt32 kingdomId, [FromBody]Kingdom kingdom)
+        public async Task<IActionResult> Put([FromRoute] UInt32 kingdomId, [FromBody] Kingdom kingdom)
         {
             kingdom.KingdomId = kingdomId;
             _context.Kingdoms.Add(kingdom);
@@ -103,7 +103,7 @@ namespace KingdomApi.Controllers
 
         [HttpDelete]
         [Route("kingdomId")]
-        public async Task<IActionResult> Delete([FromRoute]UInt32 kingdomId)
+        public async Task<IActionResult> Delete([FromRoute] UInt32 kingdomId)
         {
             var kingdom = new Kingdom
             {
