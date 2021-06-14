@@ -48,12 +48,6 @@ namespace KingdomApi.Controllers
             }
         }
 
-        [HttpPost]
-        public IActionResult Logout([FromBody] NoblemanCredential noblemanCredential)
-        {
-            return Ok();
-        }
-
         public class NoblemanCredential
         {
             public String UsernameOrEmail { get; set; }
