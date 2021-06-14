@@ -196,12 +196,31 @@ namespace KingdomApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Creates a Kingdom.
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     POST /Kingdom
+        ///     {
+        ///        "KingdomName": "My First Kingdom",
+        ///        "Description": "This is my first kingdom"
+        ///     }
+        ///
+        /// </remarks>
+        /// <param name="kingdom"></param>
+        /// <returns>A newly created Kingdom</returns>
+        /// <response code="201">Returns the newly created Kingdom</response>
+        /// <response code="400">If the item is null</response>
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> PostKingdom([FromBody] Kingdom kingdom)
         {
             _context.Kingdoms.Add(kingdom);
             await _context.SaveChangesAsync();
-            return new CreatedResult(kingdom.KingdomId.ToString(), kingdom);
+            return CreatedAtRoute("GetKingdomById", new { kingdomId = kingdom.KingdomId }, kingdom);
         }
 
         [HttpPost]

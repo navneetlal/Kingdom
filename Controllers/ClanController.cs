@@ -23,6 +23,11 @@ namespace KingdomApi.Controllers
             _context = context;
         }
 
+        /// <summary>
+        /// Get clan information
+        /// </summary>
+        /// <param name="clanId"></param>
+        /// <returns></returns>        
         [HttpGet]
         [Route("{clanId}")]
         public async Task<IActionResult> GetClanById([FromRoute] uint clanId)
