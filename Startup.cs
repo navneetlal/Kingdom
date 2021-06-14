@@ -46,6 +46,7 @@ namespace KingdomApi
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UsePathBase("/");
             app.UseRouting();
 
             app.UseAuthentication();
@@ -57,7 +58,7 @@ namespace KingdomApi
             app.UseXContentTypeOptions();
             app.UseXfo(xfo => xfo.Deny());
             app.UseXXssProtection(xss => xss.EnabledWithBlockMode());
-
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

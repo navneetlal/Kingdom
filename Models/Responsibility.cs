@@ -32,7 +32,7 @@ namespace KingdomApi.Models
         public ActionLevel ActionLevel { get; set; } = ActionLevel.Own;
 
         public ICollection<Clan> Clans { get; set; }
-        public ICollection<Responsibility> Responsibilities { get; set; }
+        public ICollection<Nobleman> Noblemen { get; set; }
 
         public UInt32 KingdomId { get; set; }
         public Kingdom Kingdom { get; set; }

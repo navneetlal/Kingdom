@@ -26,7 +26,7 @@ namespace KingdomApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromRoute] UInt32 kingdomId, [FromQuery] GetAllClanQuery query)
+        public async Task<IActionResult> GetAll([FromRoute] UInt32 kingdomId, [FromQuery] PaginationQuery query)
         {
             if (query.perPage > 100)
             {
@@ -83,10 +83,62 @@ namespace KingdomApi.Controllers
             return new OkObjectResult(response);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Post([FromBody] Clan clan)
+        [HttpGet]
+        [Route("{clanId}/noblemen")]
+        public async Task<IActionResult> GetAllNoblemen([FromRoute] UInt64 clanId, [FromRoute] UInt64 kingdomId, [FromQuery] PaginationQuery query)
         {
-            _context.Clans.Add(clan);
+            var noblemen = _context.Noblemen
+                .Include(nobleman => nobleman.Clans.Where(clan => clan.ClanId.Equals(clanId)));
+            var totalCount = await noblemen.CountAsync();
+            var result = await noblemen
+                .Skip((query.page - 1) * query.perPage)
+                .Take(query.perPage)
+                .AsNoTracking()
+                .ToListAsync();
+            var response = new ResponseObject<Nobleman>
+            {
+                Status = true,
+                Message = "Success",
+                Response = new Response<Nobleman>
+                {
+                    Page = query.page,
+                    PerPage = query.perPage,
+                    Total = (UInt32)totalCount,
+                    Results = result
+                }
+            };
+            return new OkObjectResult(response);
+        }
+
+        [HttpGet]
+        [Route("{clanId}/responsibilities")]
+        public async Task<IActionResult> GetAllResponsibility([FromRoute] UInt64 clanId, [FromRoute] UInt64 kingdomId, [FromQuery] PaginationQuery query)
+        {
+            var responsibilities = _context.Responsibilities
+                .Include(responsibility => responsibility.Clans.Where(clan => clan.ClanId.Equals(clanId)));
+            var totalCount = await responsibilities.CountAsync();
+            var result = await responsibilities
+                .Skip((query.page - 1) * query.perPage)
+                .Take(query.perPage)
+                .AsNoTracking()
+                .ToListAsync();
+            var response = new ResponseObject<Responsibility>
+            {
+                Status = true,
+                Message = "Success",
+                Response = new Response<Responsibility>
+                {
+                    Results = result
+                }
+            };
+            return new OkObjectResult(response);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Post([FromRoute] UInt32 kingdomId, [FromBody] Clan clan)
+        {
+            clan.KingdomId = kingdomId;
+            _context.Add(clan);
             await _context.SaveChangesAsync();
             return new CreatedResult(clan.ClanId.ToString(), clan);
         }
@@ -116,7 +168,7 @@ namespace KingdomApi.Controllers
     }
 
     [BindProperties]
-    public class GetAllClanQuery
+    public class PaginationQuery
     {
         public UInt16 page { get; set; } = 1;
         public UInt16 perPage { get; set; } = 10;

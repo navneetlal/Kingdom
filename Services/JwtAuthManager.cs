@@ -18,11 +18,13 @@ namespace KingdomApi.Services
     public class JwtAuthManager
     {
         private readonly IConfiguration _config;
+
         public JwtAuthManager(IConfiguration config)
         {
             _config = config;
         }
-        public string GenerateTokens(Nobleman nobleman)
+
+        public string GenerateToken(Nobleman nobleman)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -39,7 +41,7 @@ namespace KingdomApi.Services
             var token = new JwtSecurityToken(_config["Jwt:Issuer"],
               _config["Jwt:Issuer"],
               claims,
-              expires: DateTime.Now.AddMinutes(120),
+              expires: DateTime.Now.AddMinutes(30),
               notBefore: DateTime.Now.AddSeconds(-5),
               signingCredentials: credentials);
 
@@ -56,7 +58,7 @@ namespace KingdomApi.Services
             }
         }
 
-        private static string GenerateRefreshTokenString()
+        private static string GenerateRefreshToken()
         {
             var randomNumber = new byte[32];
             using var randomNumberGenerator = RandomNumberGenerator.Create();

@@ -84,8 +84,9 @@ namespace KingdomApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] Responsibility responsibility)
+        public async Task<IActionResult> Post([FromRoute] UInt32 kingdomId, [FromBody] Responsibility responsibility)
         {
+            responsibility.KingdomId = kingdomId;
             _context.Responsibilities.Add(responsibility);
             await _context.SaveChangesAsync();
             return new CreatedResult(responsibility.ResponsibilityId.ToString(), responsibility);

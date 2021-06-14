@@ -2,5 +2,7 @@
   "cSpell.words": [
     "Hsts",
     "Konscious"
-  ]
+  ],
+  "omnisharp.enableRoslynAnalyzers": true,
+  "omnisharp.enableEditorConfigSupport": true
 }

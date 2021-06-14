@@ -48,7 +48,9 @@ namespace KingdomApi.Models
         public UInt32 PostalCode { get; set; }
 
         public ICollection<Responsibility> Responsibilities { get; set; }
-        public ICollection<Clan> clans { get; set; }
+
+
+        public ICollection<Clan> Clans { get; set; }
 
         public UInt32 KingdomId { get; set; }
         public Kingdom Kingdom { get; set; }

@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 using KingdomApi.Models;
+using KingdomApi.Services;
 
 namespace KingdomApi.Controllers
 {
@@ -82,9 +83,35 @@ namespace KingdomApi.Controllers
             return new OkObjectResult(response);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Post([FromBody] Nobleman nobleman)
+        [HttpGet]
+        [Route("{noblemanId}/responsibilities")]
+        public async Task<IActionResult> GetAllResponsibility([FromRoute] UInt64 noblemanId, [FromRoute] UInt64 kingdomId, [FromQuery] PaginationQuery query)
         {
+            var responsibilities = _context.Responsibilities
+                .Include(responsibility => responsibility.Noblemen.Where(nobleman => nobleman.NoblemanId.Equals(noblemanId)));
+            var totalCount = await responsibilities.CountAsync();
+            var result = await responsibilities
+                .Skip((query.page - 1) * query.perPage)
+                .Take(query.perPage)
+                .AsNoTracking()
+                .ToListAsync();
+            var response = new ResponseObject<Responsibility>
+            {
+                Status = true,
+                Message = "Success",
+                Response = new Response<Responsibility>
+                {
+                    Results = result
+                }
+            };
+            return new OkObjectResult(response);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Post([FromRoute] UInt32 kingdomId, [FromBody] Nobleman nobleman)
+        {
+            nobleman.Password = Hash.hashPassword(nobleman.Password);
+            nobleman.KingdomId = kingdomId;
             _context.Noblemen.Add(nobleman);
             await _context.SaveChangesAsync();
             return new CreatedResult(nobleman.NoblemanId.ToString(), nobleman);
