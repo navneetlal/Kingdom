@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -27,9 +26,9 @@ namespace KingdomApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromRoute] UInt32 kingdomId, [FromQuery] GetAllNoblemanQuery query)
+        public async Task<IActionResult> GetAll([FromRoute] uint kingdomId, [FromQuery] GetAllNoblemanQuery query)
         {
-            if (query.perPage > 100)
+            if (query.PerPage > 100)
             {
                 return StatusCode(StatusCodes.Status413PayloadTooLarge);
             }
@@ -38,8 +37,8 @@ namespace KingdomApi.Controllers
                 var nobleman = _context.Noblemen.Where(nobleman => nobleman.KingdomId.Equals(kingdomId));
                 var totalCount = await nobleman.CountAsync();
                 var result = await nobleman
-                    .Skip((query.page - 1) * query.perPage)
-                    .Take(query.perPage)
+                    .Skip((query.Page - 1) * query.PerPage)
+                    .Take(query.PerPage)
                     .AsNoTracking()
                     .ToListAsync();
                 var response = new ResponseObject<Nobleman>
@@ -48,9 +47,9 @@ namespace KingdomApi.Controllers
                     Message = "Success",
                     Response = new Response<Nobleman>
                     {
-                        Page = query.page,
-                        PerPage = query.perPage,
-                        Total = (UInt32)totalCount,
+                        Page = query.Page,
+                        PerPage = query.PerPage,
+                        Total = (uint)totalCount,
                         Results = result
                     }
                 };
@@ -64,7 +63,7 @@ namespace KingdomApi.Controllers
 
         [HttpGet]
         [Route("{noblemanId}")]
-        public async Task<IActionResult> GetById([FromRoute] UInt32 noblemanId, [FromRoute] UInt32 kingdomId)
+        public async Task<IActionResult> GetById([FromRoute] uint noblemanId, [FromRoute] uint kingdomId)
         {
             var nobleman = await _context.Noblemen
                 .Where(nobleman => nobleman.NoblemanId.Equals(noblemanId))
@@ -85,14 +84,15 @@ namespace KingdomApi.Controllers
 
         [HttpGet]
         [Route("{noblemanId}/responsibilities")]
-        public async Task<IActionResult> GetAllResponsibility([FromRoute] UInt64 noblemanId, [FromRoute] UInt64 kingdomId, [FromQuery] PaginationQuery query)
+        public async Task<IActionResult> GetAllResponsibility([FromRoute] uint noblemanId, [FromRoute] uint kingdomId, [FromQuery] PaginationQuery query)
         {
             var responsibilities = _context.Responsibilities
+                .Where(responsibility => responsibility.KingdomId.Equals(kingdomId))
                 .Include(responsibility => responsibility.Noblemen.Where(nobleman => nobleman.NoblemanId.Equals(noblemanId)));
             var totalCount = await responsibilities.CountAsync();
             var result = await responsibilities
-                .Skip((query.page - 1) * query.perPage)
-                .Take(query.perPage)
+                .Skip((query.Page - 1) * query.PerPage)
+                .Take(query.PerPage)
                 .AsNoTracking()
                 .ToListAsync();
             var response = new ResponseObject<Responsibility>
@@ -108,9 +108,9 @@ namespace KingdomApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromRoute] UInt32 kingdomId, [FromBody] Nobleman nobleman)
+        public async Task<IActionResult> Post([FromRoute] uint kingdomId, [FromBody] Nobleman nobleman)
         {
-            nobleman.Password = Hash.hashPassword(nobleman.Password);
+            nobleman.Password = PasswordHashManager.HashPassword(nobleman.Password);
             nobleman.KingdomId = kingdomId;
             _context.Noblemen.Add(nobleman);
             await _context.SaveChangesAsync();
@@ -119,7 +119,7 @@ namespace KingdomApi.Controllers
 
         [HttpPut]
         [Route("{noblemanId}")]
-        public async Task<IActionResult> Put([FromRoute] UInt32 noblemanId, [FromBody] Nobleman nobleman)
+        public async Task<IActionResult> Put([FromRoute] uint noblemanId, [FromBody] Nobleman nobleman)
         {
             nobleman.NoblemanId = noblemanId;
             _context.Noblemen.Add(nobleman);
@@ -129,7 +129,7 @@ namespace KingdomApi.Controllers
 
         [HttpDelete]
         [Route("{noblemanId}")]
-        public async Task<IActionResult> Delete([FromRoute] UInt32 noblemanId)
+        public async Task<IActionResult> Delete([FromRoute] uint noblemanId)
         {
             var nobleman = new Nobleman
             {
@@ -144,7 +144,7 @@ namespace KingdomApi.Controllers
     [BindProperties]
     public class GetAllNoblemanQuery
     {
-        public UInt16 page { get; set; } = 1;
-        public UInt16 perPage { get; set; } = 10;
+        public ushort Page { get; set; } = 1;
+        public ushort PerPage { get; set; } = 10;
     }
 }

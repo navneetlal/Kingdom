@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,9 +25,9 @@ namespace KingdomApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromRoute] UInt32 kingdomId, [FromQuery] PaginationQuery query)
+        public async Task<IActionResult> GetAll([FromRoute] uint kingdomId, [FromQuery] PaginationQuery query)
         {
-            if (query.perPage > 100)
+            if (query.PerPage > 100)
             {
                 return StatusCode(StatusCodes.Status413PayloadTooLarge);
             }
@@ -37,8 +36,8 @@ namespace KingdomApi.Controllers
                 var clan = _context.Clans.Where(clan => clan.KingdomId.Equals(kingdomId));
                 var totalCount = await clan.CountAsync();
                 var result = await clan
-                    .Skip((query.page - 1) * query.perPage)
-                    .Take(query.perPage)
+                    .Skip((query.Page - 1) * query.PerPage)
+                    .Take(query.PerPage)
                     .AsNoTracking()
                     .ToListAsync();
                 var response = new ResponseObject<Clan>
@@ -47,9 +46,9 @@ namespace KingdomApi.Controllers
                     Message = "Success",
                     Response = new Response<Clan>
                     {
-                        Page = query.page,
-                        PerPage = query.perPage,
-                        Total = (UInt32)totalCount,
+                        Page = query.Page,
+                        PerPage = query.PerPage,
+                        Total = (uint)totalCount,
                         Results = result
                     }
                 };
@@ -63,7 +62,7 @@ namespace KingdomApi.Controllers
 
         [HttpGet]
         [Route("{clanId}")]
-        public async Task<IActionResult> GetById([FromRoute] UInt64 clanId, [FromRoute] UInt64 kingdomId)
+        public async Task<IActionResult> GetById([FromRoute] uint clanId, [FromRoute] uint kingdomId)
         {
             var clan = await _context.Clans
                 .Where(clan => clan.ClanId.Equals(clanId))
@@ -85,14 +84,15 @@ namespace KingdomApi.Controllers
 
         [HttpGet]
         [Route("{clanId}/noblemen")]
-        public async Task<IActionResult> GetAllNoblemen([FromRoute] UInt64 clanId, [FromRoute] UInt64 kingdomId, [FromQuery] PaginationQuery query)
+        public async Task<IActionResult> GetAllNoblemen([FromRoute] uint clanId, [FromRoute] uint kingdomId, [FromQuery] PaginationQuery query)
         {
             var noblemen = _context.Noblemen
+                .Where(nobleman => nobleman.KingdomId.Equals(kingdomId))
                 .Include(nobleman => nobleman.Clans.Where(clan => clan.ClanId.Equals(clanId)));
             var totalCount = await noblemen.CountAsync();
             var result = await noblemen
-                .Skip((query.page - 1) * query.perPage)
-                .Take(query.perPage)
+                .Skip((query.Page - 1) * query.PerPage)
+                .Take(query.PerPage)
                 .AsNoTracking()
                 .ToListAsync();
             var response = new ResponseObject<Nobleman>
@@ -101,9 +101,9 @@ namespace KingdomApi.Controllers
                 Message = "Success",
                 Response = new Response<Nobleman>
                 {
-                    Page = query.page,
-                    PerPage = query.perPage,
-                    Total = (UInt32)totalCount,
+                    Page = query.Page,
+                    PerPage = query.PerPage,
+                    Total = (uint)totalCount,
                     Results = result
                 }
             };
@@ -112,14 +112,15 @@ namespace KingdomApi.Controllers
 
         [HttpGet]
         [Route("{clanId}/responsibilities")]
-        public async Task<IActionResult> GetAllResponsibility([FromRoute] UInt64 clanId, [FromRoute] UInt64 kingdomId, [FromQuery] PaginationQuery query)
+        public async Task<IActionResult> GetAllResponsibility([FromRoute] uint clanId, [FromRoute] uint kingdomId, [FromQuery] PaginationQuery query)
         {
             var responsibilities = _context.Responsibilities
+                .Where(responsibility => responsibility.KingdomId.Equals(kingdomId))
                 .Include(responsibility => responsibility.Clans.Where(clan => clan.ClanId.Equals(clanId)));
             var totalCount = await responsibilities.CountAsync();
             var result = await responsibilities
-                .Skip((query.page - 1) * query.perPage)
-                .Take(query.perPage)
+                .Skip((query.Page - 1) * query.PerPage)
+                .Take(query.PerPage)
                 .AsNoTracking()
                 .ToListAsync();
             var response = new ResponseObject<Responsibility>
@@ -135,7 +136,7 @@ namespace KingdomApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromRoute] UInt32 kingdomId, [FromBody] Clan clan)
+        public async Task<IActionResult> Post([FromRoute] uint kingdomId, [FromBody] Clan clan)
         {
             clan.KingdomId = kingdomId;
             _context.Add(clan);
@@ -145,7 +146,7 @@ namespace KingdomApi.Controllers
 
         [HttpPut]
         [Route("{clanId}")]
-        public async Task<IActionResult> Put([FromRoute] UInt32 clanId, [FromBody] Clan clan)
+        public async Task<IActionResult> Put([FromRoute] uint clanId, [FromBody] Clan clan)
         {
             clan.ClanId = clanId;
             _context.Clans.Add(clan);
@@ -155,7 +156,7 @@ namespace KingdomApi.Controllers
 
         [HttpDelete]
         [Route("{clanId}")]
-        public async Task<IActionResult> Delete([FromRoute] UInt32 clanId)
+        public async Task<IActionResult> Delete([FromRoute] uint clanId)
         {
             var clan = new Clan
             {
@@ -170,7 +171,7 @@ namespace KingdomApi.Controllers
     [BindProperties]
     public class PaginationQuery
     {
-        public UInt16 page { get; set; } = 1;
-        public UInt16 perPage { get; set; } = 10;
+        public ushort Page { get; set; } = 1;
+        public ushort PerPage { get; set; } = 10;
     }
 }

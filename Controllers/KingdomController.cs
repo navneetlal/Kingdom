@@ -28,7 +28,7 @@ namespace KingdomApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] GetAllKingdomQuery query)
         {
-            if (query.perPage > 100)
+            if (query.PerPage > 100)
             {
                 return StatusCode(StatusCodes.Status413PayloadTooLarge);
             }
@@ -37,8 +37,8 @@ namespace KingdomApi.Controllers
                 var kingdom = _context.Kingdoms;
                 var totalCount = await kingdom.CountAsync();
                 var result = await kingdom
-                    .Skip((query.page - 1) * query.perPage)
-                    .Take(query.perPage)
+                    .Skip((query.Page - 1) * query.PerPage)
+                    .Take(query.PerPage)
                     .AsNoTracking()
                     .ToListAsync();
                 var response = new ResponseObject<Kingdom>
@@ -47,15 +47,15 @@ namespace KingdomApi.Controllers
                     Message = "Success",
                     Response = new Response<Kingdom>
                     {
-                        Page = query.page,
-                        PerPage = query.perPage,
-                        Total = (UInt32)totalCount,
+                        Page = query.Page,
+                        PerPage = query.PerPage,
+                        Total = (uint)totalCount,
                         Results = result
                     }
                 };
                 return new OkObjectResult(response);
             }
-            catch (System.Exception)
+            catch (Exception)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
@@ -63,7 +63,7 @@ namespace KingdomApi.Controllers
 
         [HttpGet]
         [Route("kingdomId")]
-        public async Task<IActionResult> GetById([FromRoute] UInt32 kingdomId)
+        public async Task<IActionResult> GetById([FromRoute] uint kingdomId)
         {
             var kingdom = await _context.Kingdoms
                 .Where(kingdom => kingdom.KingdomId.Equals(kingdomId))
@@ -93,7 +93,7 @@ namespace KingdomApi.Controllers
 
         [HttpPut]
         [Route("kingdomId")]
-        public async Task<IActionResult> Put([FromRoute] UInt32 kingdomId, [FromBody] Kingdom kingdom)
+        public async Task<IActionResult> Put([FromRoute] uint kingdomId, [FromBody] Kingdom kingdom)
         {
             kingdom.KingdomId = kingdomId;
             _context.Kingdoms.Add(kingdom);
@@ -103,7 +103,7 @@ namespace KingdomApi.Controllers
 
         [HttpDelete]
         [Route("kingdomId")]
-        public async Task<IActionResult> Delete([FromRoute] UInt32 kingdomId)
+        public async Task<IActionResult> Delete([FromRoute] uint kingdomId)
         {
             var kingdom = new Kingdom
             {
@@ -118,7 +118,7 @@ namespace KingdomApi.Controllers
     [BindProperties]
     public class GetAllKingdomQuery
     {
-        public UInt16 page { get; set; } = 1;
-        public UInt16 perPage { get; set; } = 10;
+        public ushort Page { get; set; } = 1;
+        public ushort PerPage { get; set; } = 10;
     }
 }

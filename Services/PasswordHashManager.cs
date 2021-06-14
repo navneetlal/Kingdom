@@ -6,21 +6,20 @@ using Konscious.Security.Cryptography;
 
 namespace KingdomApi.Services
 {
-    public class Hash
+    public class PasswordHashManager
     {
-        public static String hashPassword(string password)
+        public static string HashPassword(string password)
         {
-            byte[] salt = new Byte[128 / 8];
+            byte[] salt = new byte[128 / 8];
             using (var rng = RandomNumberGenerator.Create())
             {
                 rng.GetBytes(salt);
             }
             byte[] passwordByteArray = Encoding.UTF8.GetBytes(password);
 
-            var hash = Argon2Hash(passwordByteArray, salt);
+            var hash = Argon2idHashing(passwordByteArray, salt);
 
-            bool isEncryptionEnabled;
-            if (!Boolean.TryParse(Environment.GetEnvironmentVariable("ENCRYPT_PASSWORD"), out isEncryptionEnabled))
+            if (!bool.TryParse(Environment.GetEnvironmentVariable("ENCRYPT_PASSWORD"), out bool isEncryptionEnabled))
             {
                 isEncryptionEnabled = false;
             }
@@ -37,7 +36,7 @@ namespace KingdomApi.Services
             }
         }
 
-        public static bool verifyPassword(string password, string hashedAndSalted)
+        public static bool VerifyPassword(string password, string hashedAndSalted)
         {
             string[] hashedAndSaltedArray = hashedAndSalted.Split(":");
             string salt = hashedAndSaltedArray[0];
@@ -46,7 +45,7 @@ namespace KingdomApi.Services
 
             byte[] passwordByteArray = Encoding.UTF8.GetBytes(password);
 
-            var hashedPassword = Argon2Hash(passwordByteArray, saltByteArray);
+            var hashedPassword = Argon2idHashing(passwordByteArray, saltByteArray);
             byte[] hash;
 
             if (hashedAndSaltedArray.Length.Equals(2))
@@ -66,44 +65,44 @@ namespace KingdomApi.Services
             return ByteArraysEqual(hashedPassword, hash);
         }
 
-        private static byte[] Argon2Hash(byte[] password, byte[] salt)
+        private static byte[] Argon2idHashing(byte[] password, byte[] salt)
         {
-            var argon2 = new Argon2id(password);
-
-            argon2.DegreeOfParallelism = 4; // 2 * number of cores
-            argon2.MemorySize = 4096; // in KB
-            argon2.Iterations = 10; // Should take 0.5 seconds
-            argon2.Salt = salt; // 128 bit recommended
+            var argon2 = new Argon2id(password)
+            {
+                DegreeOfParallelism = 4, // 2 * number of cores
+                MemorySize = 4096, // in KB
+                Iterations = 10, // Should take 0.5 seconds
+                Salt = salt, // 128 bit recommended
+            };
 
             return argon2.GetBytes(256 / 8); // 128 bit recommended
         }
 
         private static string Encrypt(byte[] hashedPassaword, byte[] key)
         {
-            using (var aes = new AesGcm(key))
-            {
-                var nonce = new byte[AesGcm.NonceByteSizes.MaxSize];
-                RandomNumberGenerator.Fill(nonce);
+            using var aes = new AesGcm(key);
 
-                var tag = new byte[AesGcm.TagByteSizes.MaxSize];
-                var ciphertext = new byte[hashedPassaword.Length];
+            var nonce = new byte[AesGcm.NonceByteSizes.MaxSize];
+            RandomNumberGenerator.Fill(nonce);
 
-                aes.Encrypt(nonce, hashedPassaword, ciphertext, tag);
+            var tag = new byte[AesGcm.TagByteSizes.MaxSize];
+            var ciphertext = new byte[hashedPassaword.Length];
 
-                return $"{Convert.ToBase64String(ciphertext)}:{Convert.ToBase64String(nonce)}:{Convert.ToBase64String(tag)}";
-            }
+            aes.Encrypt(nonce, hashedPassaword, ciphertext, tag);
+
+            return $"{Convert.ToBase64String(ciphertext)}:{Convert.ToBase64String(nonce)}:{Convert.ToBase64String(tag)}";
         }
 
         private static byte[] Decrypt(byte[] ciphertext, byte[] nonce, byte[] tag, byte[] key)
         {
-            using (var aes = new AesGcm(key))
-            {
-                var plaintextBytes = new byte[ciphertext.Length];
+            using var aes = new AesGcm(key);
 
-                aes.Decrypt(nonce, ciphertext, tag, plaintextBytes);
+            var plaintextBytes = new byte[ciphertext.Length];
 
-                return plaintextBytes;
-            }
+            aes.Decrypt(nonce, ciphertext, tag, plaintextBytes);
+
+            return plaintextBytes;
+
         }
 
         private static bool ByteArraysEqual(byte[] a, byte[] b)
@@ -119,7 +118,7 @@ namespace KingdomApi.Services
             bool areSame = true;
             for (var i = 0; i < a.Length; i++)
             {
-                areSame &= (a[i] == b[i]);
+                areSame &= a[i] == b[i];
             }
             return areSame;
         }

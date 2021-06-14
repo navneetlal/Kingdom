@@ -14,45 +14,45 @@ namespace KingdomApi.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public UInt32 NoblemanId { get; set; }
+        public uint NoblemanId { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "{0} length must be between {2} and {1}.", MinimumLength = 2)]
-        public String Username { get; set; }
+        public string Username { get; set; }
 
-        public String Password { get; set; }
+        public string Password { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "{0} length must be between {2} and {1}.", MinimumLength = 2)]
-        public String FullName { get; set; }
+        public string FullName { get; set; }
 
         [EmailAddress]
-        public String EmailAddress { get; set; }
+        public string EmailAddress { get; set; }
 
         [Phone]
-        public String PhoneNumber { get; set; }
+        public string PhoneNumber { get; set; }
         public DateTime DateOfBirth { get; set; }
 
         [JsonConverter(typeof(StringEnumConverter))]
-        public Gender Gender { get; set; } = Gender.RatherNotDisclose;
+        public Gender Gender { get; set; } = Gender.PreferNotToSay;
 
-        public String OrganizationName { get; set; }
-        public String Department { get; set; }
-        public String JobTitle { get; set; }
-        public String EmployeeId { get; set; }
-        public String ReportingManager { get; set; }
-        public String Address { get; set; }
-        public String City { get; set; }
-        public String State { get; set; }
-        public String Country { get; set; }
-        public UInt32 PostalCode { get; set; }
+        public string OrganizationName { get; set; }
+        public string Department { get; set; }
+        public string JobTitle { get; set; }
+        public string EmployeeId { get; set; }
+        public string ReportingManager { get; set; }
+        public string Address { get; set; }
+        public string City { get; set; }
+        public string State { get; set; }
+        public string Country { get; set; }
+        public uint PostalCode { get; set; }
 
         public ICollection<Responsibility> Responsibilities { get; set; }
 
 
         public ICollection<Clan> Clans { get; set; }
 
-        public UInt32 KingdomId { get; set; }
+        public uint KingdomId { get; set; }
         public Kingdom Kingdom { get; set; }
     }
 
@@ -67,7 +67,7 @@ namespace KingdomApi.Models
         [EnumMember(Value = "Other")]
         Other,
 
-        [EnumMember(Value = "RatherNotDisclose")]
-        RatherNotDisclose
+        [EnumMember(Value = "PreferNotToSay")]
+        PreferNotToSay
     }
 }

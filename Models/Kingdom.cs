@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -10,13 +9,13 @@ namespace KingdomApi.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public UInt32 KingdomId { get; set; }
+        public uint KingdomId { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "{0} length must be between {2} and {1}.", MinimumLength = 2)]
-        public String KingdomName { get; set; }
+        public string KingdomName { get; set; }
 
-        public String Description { get; set; }
+        public string Description { get; set; }
 
         public List<Clan> Clans { get; set; }
         public List<Nobleman> Noblemen { get; set; }

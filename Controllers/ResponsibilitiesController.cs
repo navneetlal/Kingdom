@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,9 +25,9 @@ namespace KingdomApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromRoute] UInt32 kingdomId, [FromQuery] GetAllResponsibilityQuery query)
+        public async Task<IActionResult> GetAll([FromRoute] uint kingdomId, [FromQuery] GetAllResponsibilityQuery query)
         {
-            if (query.perPage > 100)
+            if (query.PerPage > 100)
             {
                 return StatusCode(StatusCodes.Status413PayloadTooLarge);
             }
@@ -38,8 +37,8 @@ namespace KingdomApi.Controllers
                     .Where(responsibility => responsibility.KingdomId.Equals(kingdomId));
                 var totalCount = await responsibility.CountAsync();
                 var result = await responsibility
-                    .Skip((query.page - 1) * query.perPage)
-                    .Take(query.perPage)
+                    .Skip((query.Page - 1) * query.PerPage)
+                    .Take(query.PerPage)
                     .AsNoTracking()
                     .ToListAsync();
                 var response = new ResponseObject<Responsibility>
@@ -48,9 +47,9 @@ namespace KingdomApi.Controllers
                     Message = "Success",
                     Response = new Response<Responsibility>
                     {
-                        Page = query.page,
-                        PerPage = query.perPage,
-                        Total = (UInt32)totalCount,
+                        Page = query.Page,
+                        PerPage = query.PerPage,
+                        Total = (uint)totalCount,
                         Results = result
                     }
                 };
@@ -64,7 +63,7 @@ namespace KingdomApi.Controllers
 
         [HttpGet]
         [Route("{responsibilityId}")]
-        public async Task<IActionResult> GetById([FromRoute] UInt32 responsibilityId, [FromRoute] UInt32 kingdomId)
+        public async Task<IActionResult> GetById([FromRoute] uint responsibilityId, [FromRoute] uint kingdomId)
         {
             var responsibility = await _context.Responsibilities
                 .Where(responsibility => responsibility.ResponsibilityId.Equals(responsibilityId))
@@ -84,7 +83,7 @@ namespace KingdomApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromRoute] UInt32 kingdomId, [FromBody] Responsibility responsibility)
+        public async Task<IActionResult> Post([FromRoute] uint kingdomId, [FromBody] Responsibility responsibility)
         {
             responsibility.KingdomId = kingdomId;
             _context.Responsibilities.Add(responsibility);
@@ -94,7 +93,7 @@ namespace KingdomApi.Controllers
 
         [HttpPut]
         [Route("{responsibilityId}")]
-        public async Task<IActionResult> Put([FromRoute] UInt32 responsibilityId, [FromBody] Responsibility responsibility)
+        public async Task<IActionResult> Put([FromRoute] uint responsibilityId, [FromBody] Responsibility responsibility)
         {
             responsibility.ResponsibilityId = responsibilityId;
             _context.Responsibilities.Add(responsibility);
@@ -104,7 +103,7 @@ namespace KingdomApi.Controllers
 
         [HttpDelete]
         [Route("{responsibilityId}")]
-        public async Task<IActionResult> Delete([FromRoute] UInt32 responsibilityId)
+        public async Task<IActionResult> Delete([FromRoute] uint responsibilityId)
         {
             var responsibility = new Responsibility
             {
@@ -119,7 +118,7 @@ namespace KingdomApi.Controllers
     [BindProperties]
     public class GetAllResponsibilityQuery
     {
-        public UInt16 page { get; set; } = 1;
-        public UInt16 perPage { get; set; } = 10;
+        public ushort Page { get; set; } = 1;
+        public ushort PerPage { get; set; } = 10;
     }
 }

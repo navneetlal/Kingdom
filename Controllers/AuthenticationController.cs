@@ -1,15 +1,13 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-using KingdomApi.Models;
+using KingdomApi.Services;
 
 namespace KingdomApi.Controllers
 {
@@ -28,9 +26,26 @@ namespace KingdomApi.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public IActionResult Login([FromBody] NoblemanCredential noblemanCredential)
+        public async Task<IActionResult> Login([FromBody] NoblemanCredential noblemanCredential)
         {
-            return Ok();
+            var nobleman = await _context.Noblemen.Where(nobleman =>
+                nobleman.Username.Equals(noblemanCredential.UsernameOrEmail) ||
+                nobleman.EmailAddress.Equals(noblemanCredential.UsernameOrEmail)
+            )
+            .Include(nobleman => nobleman.Kingdom)
+            .Include(nobleman => nobleman.Responsibilities)
+            .AsNoTracking()
+            .FirstAsync();
+
+            if (PasswordHashManager.VerifyPassword(noblemanCredential.Password, nobleman.Password))
+            {
+                var token = JwtAuthManager.GenerateToken(nobleman);
+                return new OkObjectResult(new { token });
+            }
+            else
+            {
+                return Ok();
+            }
         }
 
         [HttpPost]
@@ -41,7 +56,8 @@ namespace KingdomApi.Controllers
 
         public class NoblemanCredential
         {
-
+            public String UsernameOrEmail { get; set; }
+            public String Password { get; set; }
         }
     }
 }
