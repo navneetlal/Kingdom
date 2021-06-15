@@ -39,7 +39,10 @@ namespace KingdomApi
             //         };
             //     });
             services.AddDbContext<KingdomContext>();
-            services.AddControllers().AddXmlSerializerFormatters();
+            // services.AddRouting(options => options.LowercaseUrls = true);
+            services.AddControllers()
+                .AddJsonOptions(options => options.JsonSerializerOptions.IgnoreNullValues = true)
+                .AddXmlSerializerFormatters();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo

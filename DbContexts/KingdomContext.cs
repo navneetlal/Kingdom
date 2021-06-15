@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using EntityFramework.Exceptions.PostgreSQL;
+
 using KingdomApi.Models;
 
 namespace KingdomApi
@@ -13,6 +15,7 @@ namespace KingdomApi
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             => optionsBuilder
                 .UseNpgsql("Host=localhost;Database=kingdom;Username=postgres;Password=example")
+                .UseExceptionProcessor()
                 .UseSnakeCaseNamingConvention();
     }
 }

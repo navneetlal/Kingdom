@@ -25,7 +25,7 @@ namespace KingdomApi.Controllers
 
         [HttpGet]
         [Route("{responsibilityId}")]
-        public async Task<IActionResult> GetResponsibilityById([FromRoute] uint responsibilityId)
+        public async Task<IActionResult> GetResponsibilityById([FromRoute] int responsibilityId)
         {
             var responsibility = await _context.Responsibilities
                 .Where(responsibility => responsibility.ResponsibilityId.Equals(responsibilityId))
@@ -45,7 +45,7 @@ namespace KingdomApi.Controllers
 
         [HttpPut]
         [Route("{responsibilityId}")]
-        public async Task<IActionResult> PutResponsibility([FromRoute] uint responsibilityId, [FromBody] Responsibility responsibility)
+        public async Task<IActionResult> PutResponsibility([FromRoute] int responsibilityId, [FromBody] Responsibility responsibility)
         {
             responsibility.ResponsibilityId = responsibilityId;
             _context.Responsibilities.Add(responsibility);
@@ -55,7 +55,7 @@ namespace KingdomApi.Controllers
 
         [HttpDelete]
         [Route("{responsibilityId}")]
-        public async Task<IActionResult> DeleteResponsibility([FromRoute] uint responsibilityId)
+        public async Task<IActionResult> DeleteResponsibility([FromRoute] int responsibilityId)
         {
             var responsibility = new Responsibility
             {

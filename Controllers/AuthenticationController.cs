@@ -26,6 +26,7 @@ namespace KingdomApi.Controllers
 
         [AllowAnonymous]
         [HttpPost]
+        [Route("login")]
         public async Task<IActionResult> Login([FromBody] NoblemanCredential noblemanCredential)
         {
             var nobleman = await _context.Noblemen.Where(nobleman =>

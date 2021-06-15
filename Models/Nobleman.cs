@@ -4,17 +4,21 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 
+using Microsoft.EntityFrameworkCore;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
 namespace KingdomApi.Models
 {
     [Table("noblemen")]
+    [Index(nameof(Username), IsUnique = true)]
+    [Index(nameof(EmailAddress), IsUnique = true)]
     public class Nobleman
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public uint NoblemanId { get; set; }
+        public int NoblemanId { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "{0} length must be between {2} and {1}.", MinimumLength = 2)]
@@ -34,6 +38,7 @@ namespace KingdomApi.Models
         public DateTime DateOfBirth { get; set; }
 
         [JsonConverter(typeof(StringEnumConverter))]
+        [Column(TypeName = "varchar(24)")]
         public Gender Gender { get; set; } = Gender.PreferNotToSay;
 
         public string OrganizationName { get; set; }
@@ -45,14 +50,14 @@ namespace KingdomApi.Models
         public string City { get; set; }
         public string State { get; set; }
         public string Country { get; set; }
-        public uint PostalCode { get; set; }
+        public int PostalCode { get; set; }
 
         public ICollection<Responsibility> Responsibilities { get; set; }
 
 
         public ICollection<Clan> Clans { get; set; }
 
-        public uint KingdomId { get; set; }
+        public int KingdomId { get; set; }
         public Kingdom Kingdom { get; set; }
     }
 

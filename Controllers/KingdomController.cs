@@ -56,29 +56,33 @@ namespace KingdomApi.Controllers
                 };
                 return new OkObjectResult(response);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
         [HttpGet]
         [Route("{kingdomId}")]
-        public async Task<IActionResult> GetKingdomById([FromRoute] uint kingdomId)
+        public async Task<IActionResult> GetKingdomById([FromRoute] int kingdomId)
         {
             var kingdom = await _context.Kingdoms
                 .Where(kingdom => kingdom.KingdomId.Equals(kingdomId))
                 .Include(kingdom => kingdom.Clans)
-                .Include(kingdom => kingdom.Noblemen)
                 .AsNoTracking()
-                .FirstAsync();
+                .ToListAsync();
+            if(kingdom.Count == 0)
+            {
+                return StatusCode(StatusCodes.Status404NotFound);
+            }
             var response = new ResponseObject<Kingdom>
             {
                 Status = true,
                 Message = "Success",
                 Response = new Response<Kingdom>
                 {
-                    Results = new List<Kingdom> { kingdom }
+                    Results = kingdom
                 }
             };
             return new OkObjectResult(response);
@@ -86,7 +90,7 @@ namespace KingdomApi.Controllers
 
         [HttpGet]
         [Route("{kingdomId}/clan")]
-        public async Task<IActionResult> GetAllClan([FromRoute] uint kingdomId, [FromQuery] PaginationQuery query)
+        public async Task<IActionResult> GetAllClan([FromRoute] int kingdomId, [FromQuery] PaginationQuery query)
         {
             if (query.PerPage > 100)
             {
@@ -123,7 +127,7 @@ namespace KingdomApi.Controllers
 
         [HttpGet]
         [Route("{kingdomId}/nobleman")]
-        public async Task<IActionResult> GetAllNobleman([FromRoute] uint kingdomId, [FromQuery] PaginationQuery query)
+        public async Task<IActionResult> GetAllNobleman([FromRoute] int kingdomId, [FromQuery] PaginationQuery query)
         {
             if (query.PerPage > 100)
             {
@@ -158,9 +162,18 @@ namespace KingdomApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Get the list of responsibilities
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <param name="kingdomId"></param>
+        /// <param name="query"></param>
+        /// <returns>Returns the list of responsibilities created inside the Kingdom</returns>
         [HttpGet]
         [Route("{kingdomId}/responsibilities")]
-        public async Task<IActionResult> GetAllResponsibilities([FromRoute] uint kingdomId, [FromQuery] PaginationQuery query)
+        public async Task<IActionResult> GetAllResponsibilities([FromRoute] int kingdomId, [FromQuery] PaginationQuery query)
         {
             if (query.PerPage > 100)
             {
@@ -220,22 +233,22 @@ namespace KingdomApi.Controllers
         {
             _context.Kingdoms.Add(kingdom);
             await _context.SaveChangesAsync();
-            return CreatedAtRoute("GetKingdomById", new { kingdomId = kingdom.KingdomId }, kingdom);
+            return CreatedAtAction(nameof(GetKingdomById), new { kingdomId = kingdom.KingdomId }, kingdom);
         }
 
         [HttpPost]
         [Route("{kingdomId}/clan")]
-        public async Task<IActionResult> PostClan([FromRoute] uint kingdomId, [FromBody] Clan clan)
+        public async Task<IActionResult> PostClan([FromRoute] int kingdomId, [FromBody] Clan clan)
         {
             clan.KingdomId = kingdomId;
             _context.Add(clan);
             await _context.SaveChangesAsync();
-            return new CreatedResult(clan.ClanId.ToString(), clan);
+            return CreatedAtAction(nameof(ClanController.GetClanById), new { clanId = clan.ClanId }, clan);
         }
 
         [HttpPost]
         [Route("{kingdomId}/nobleman")]
-        public async Task<IActionResult> PostNobleman([FromRoute] uint kingdomId, [FromBody] Nobleman nobleman)
+        public async Task<IActionResult> PostNobleman([FromRoute] int kingdomId, [FromBody] Nobleman nobleman)
         {
             nobleman.Password = PasswordHashManager.HashPassword(nobleman.Password);
             nobleman.KingdomId = kingdomId;
@@ -246,7 +259,7 @@ namespace KingdomApi.Controllers
 
         [HttpPost]
         [Route("{kingdomId}/responsibilities")]
-        public async Task<IActionResult> PostResponsibility([FromRoute] uint kingdomId, [FromBody] Responsibility responsibility)
+        public async Task<IActionResult> PostResponsibility([FromRoute] int kingdomId, [FromBody] Responsibility responsibility)
         {
             responsibility.KingdomId = kingdomId;
             _context.Responsibilities.Add(responsibility);
@@ -255,8 +268,8 @@ namespace KingdomApi.Controllers
         }
 
         [HttpPut]
-        [Route("kingdomId")]
-        public async Task<IActionResult> PutKingdom([FromRoute] uint kingdomId, [FromBody] Kingdom kingdom)
+        [Route("{kingdomId}")]
+        public async Task<IActionResult> PutKingdom([FromRoute] int kingdomId, [FromBody] Kingdom kingdom)
         {
             kingdom.KingdomId = kingdomId;
             _context.Kingdoms.Add(kingdom);
@@ -265,16 +278,23 @@ namespace KingdomApi.Controllers
         }
 
         [HttpDelete]
-        [Route("kingdomId")]
-        public async Task<IActionResult> DeleteKingdom([FromRoute] uint kingdomId)
+        [Route("{kingdomId}")]
+        public async Task<IActionResult> DeleteKingdom([FromRoute] int kingdomId)
         {
             var kingdom = new Kingdom
             {
                 KingdomId = kingdomId
             };
-            _context.Kingdoms.Remove(kingdom);
-            await _context.SaveChangesAsync();
-            return new OkObjectResult(kingdom);
+            try
+            {
+                _context.Kingdoms.Remove(kingdom);
+                await _context.SaveChangesAsync();
+                return new OkObjectResult(kingdom);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return StatusCode(StatusCodes.Status404NotFound);
+            }
         }
     }
 

@@ -11,9 +11,9 @@ namespace KingdomApi.Models
 
     public class Response<T>
     {
-        public ushort Page { get; set; }
-        public ushort PerPage { get; set; }
-        public uint Total { get; set; }
+        public ushort? Page { get; set; }
+        public ushort? PerPage { get; set; }
+        public uint? Total { get; set; }
         public List<T> Results { get; set; }
     }
 }

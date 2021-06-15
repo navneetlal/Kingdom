@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -30,7 +31,7 @@ namespace KingdomApi.Controllers
         /// <returns></returns>        
         [HttpGet]
         [Route("{clanId}")]
-        public async Task<IActionResult> GetClanById([FromRoute] uint clanId)
+        public async Task<IActionResult> GetClanById([FromRoute] int clanId)
         {
             var clan = await _context.Clans
                 .Where(clan => clan.ClanId.Equals(clanId))
@@ -51,8 +52,12 @@ namespace KingdomApi.Controllers
 
         [HttpGet]
         [Route("{clanId}/noblemen")]
-        public async Task<IActionResult> GetClanNoblemen([FromRoute] uint clanId, [FromQuery] PaginationQuery query)
+        public async Task<IActionResult> GetClanNoblemen([FromRoute] int clanId, [FromQuery] PaginationQuery query)
         {
+            if (query.PerPage > 100)
+            {
+                return StatusCode(StatusCodes.Status413PayloadTooLarge);
+            }
             var noblemen = _context.Noblemen
                 .Include(nobleman => nobleman.Clans.Where(clan => clan.ClanId.Equals(clanId)));
             var totalCount = await noblemen.CountAsync();
@@ -78,8 +83,12 @@ namespace KingdomApi.Controllers
 
         [HttpGet]
         [Route("{clanId}/responsibilities")]
-        public async Task<IActionResult> GetClanResponsibilities([FromRoute] uint clanId, [FromQuery] PaginationQuery query)
+        public async Task<IActionResult> GetClanResponsibilities([FromRoute] int clanId, [FromQuery] PaginationQuery query)
         {
+            if (query.PerPage > 100)
+            {
+                return StatusCode(StatusCodes.Status413PayloadTooLarge);
+            }
             var responsibilities = _context.Responsibilities
                 .Include(responsibility => responsibility.Clans.Where(clan => clan.ClanId.Equals(clanId)));
             var totalCount = await responsibilities.CountAsync();
@@ -102,7 +111,7 @@ namespace KingdomApi.Controllers
 
         [HttpPut]
         [Route("{clanId}")]
-        public async Task<IActionResult> PutClan([FromRoute] uint clanId, [FromBody] Clan clan)
+        public async Task<IActionResult> PutClan([FromRoute] int clanId, [FromBody] Clan clan)
         {
             clan.ClanId = clanId;
             _context.Clans.Add(clan);
@@ -112,7 +121,7 @@ namespace KingdomApi.Controllers
 
         [HttpDelete]
         [Route("{clanId}")]
-        public async Task<IActionResult> DeleteClan([FromRoute] uint clanId)
+        public async Task<IActionResult> DeleteClan([FromRoute] int clanId)
         {
             var clan = new Clan
             {

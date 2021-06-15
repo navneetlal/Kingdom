@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -25,7 +26,7 @@ namespace KingdomApi.Controllers
 
         [HttpGet]
         [Route("{noblemanId}")]
-        public async Task<IActionResult> GetNoblemanById([FromRoute] uint noblemanId)
+        public async Task<IActionResult> GetNoblemanById([FromRoute] int noblemanId)
         {
             var nobleman = await _context.Noblemen
                 .Where(nobleman => nobleman.NoblemanId.Equals(noblemanId))
@@ -45,8 +46,12 @@ namespace KingdomApi.Controllers
 
         [HttpGet]
         [Route("{noblemanId}/responsibilities")]
-        public async Task<IActionResult> GetNoblemenResponsibilities([FromRoute] uint noblemanId, [FromQuery] PaginationQuery query)
+        public async Task<IActionResult> GetNoblemenResponsibilities([FromRoute] int noblemanId, [FromQuery] PaginationQuery query)
         {
+            if (query.PerPage > 100)
+            {
+                return StatusCode(StatusCodes.Status413PayloadTooLarge);
+            }
             var responsibilities = _context.Responsibilities
                 .Include(responsibility => responsibility.Noblemen.Where(nobleman => nobleman.NoblemanId.Equals(noblemanId)));
             var totalCount = await responsibilities.CountAsync();
@@ -69,7 +74,7 @@ namespace KingdomApi.Controllers
 
         [HttpPut]
         [Route("{noblemanId}")]
-        public async Task<IActionResult> PutNobleman([FromRoute] uint noblemanId, [FromBody] Nobleman nobleman)
+        public async Task<IActionResult> PutNobleman([FromRoute] int noblemanId, [FromBody] Nobleman nobleman)
         {
             nobleman.NoblemanId = noblemanId;
             _context.Noblemen.Add(nobleman);
@@ -79,7 +84,7 @@ namespace KingdomApi.Controllers
 
         [HttpDelete]
         [Route("{noblemanId}")]
-        public async Task<IActionResult> DeleteNobleman([FromRoute] uint noblemanId)
+        public async Task<IActionResult> DeleteNobleman([FromRoute] int noblemanId)
         {
             var nobleman = new Nobleman
             {
