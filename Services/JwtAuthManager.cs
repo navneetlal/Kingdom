@@ -12,7 +12,7 @@ namespace KingdomApi.Services
 {
     public class JwtAuthManager
     {
-        public static string GenerateToken(Nobleman nobleman)
+        public static string GenerateToken(Noble noble)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("Jwt:Key")));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -20,9 +20,9 @@ namespace KingdomApi.Services
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Sub, nobleman.Username),
+                new Claim(JwtRegisteredClaimNames.Sub, noble.Username),
                 new Claim(JwtRegisteredClaimNames.Iss, Environment.GetEnvironmentVariable("Jwt:Issuer")),
-                new Claim(JwtRegisteredClaimNames.Aud, nobleman.Kingdom.KingdomName),
+                new Claim(JwtRegisteredClaimNames.Aud, noble.Kingdom.KingdomName),
                 new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString()),
             };
 

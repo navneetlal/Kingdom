@@ -27,20 +27,20 @@ namespace KingdomApi.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("login")]
-        public async Task<IActionResult> Login([FromBody] NoblemanCredential noblemanCredential)
+        public async Task<IActionResult> Login([FromBody] NobleCredential nobleCredential)
         {
-            var nobleman = await _context.Noblemen.Where(nobleman =>
-                nobleman.Username.Equals(noblemanCredential.UsernameOrEmail) ||
-                nobleman.EmailAddress.Equals(noblemanCredential.UsernameOrEmail)
+            var noble = await _context.Nobles.Where(noble =>
+                noble.Username.Equals(nobleCredential.UsernameOrEmail) ||
+                noble.EmailAddress.Equals(nobleCredential.UsernameOrEmail)
             )
-            .Include(nobleman => nobleman.Kingdom)
-            .Include(nobleman => nobleman.Responsibilities)
+            .Include(noble => noble.Kingdom)
+            .Include(noble => noble.Responsibilities)
             .AsNoTracking()
             .FirstAsync();
 
-            if (PasswordHashManager.VerifyPassword(noblemanCredential.Password, nobleman.Password))
+            if (PasswordHashManager.VerifyPassword(nobleCredential.Password, noble.Password))
             {
-                var token = JwtAuthManager.GenerateToken(nobleman);
+                var token = JwtAuthManager.GenerateToken(noble);
                 return new OkObjectResult(new { token });
             }
             else
@@ -49,7 +49,7 @@ namespace KingdomApi.Controllers
             }
         }
 
-        public class NoblemanCredential
+        public class NobleCredential
         {
             public String UsernameOrEmail { get; set; }
             public String Password { get; set; }
