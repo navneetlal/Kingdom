@@ -2,9 +2,8 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
-
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace KingdomApi.Models
 {
@@ -21,15 +20,22 @@ namespace KingdomApi.Models
 
         [Required]
         [StringLength(64, ErrorMessage = "{0} length must be between {2} and {1}.", MinimumLength = 2)]
-        public string ResourceName { get; set; }
+        public string Target { get; set; }
 
         [Required]
         [StringLength(24, ErrorMessage = "{0} length must be between {2} and {1}.", MinimumLength = 2)]
         public string Action { get; set; }
 
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         [Column(TypeName = "varchar(24)")]
-        public ActionLevel ActionLevel { get; set; } = ActionLevel.Own;
+        public Depth Depth { get; set; } = Depth.Own;
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        [Column(TypeName = "varchar(24)")]
+        public Effect Effect { get; set; } = Effect.Permit;
+
+        [Column(TypeName = "jsonb")]
+        public JsonDocument Condition { get; set; }
 
         public ICollection<Clan> Clans { get; set; }
         public ICollection<Nobleman> Noblemen { get; set; }
@@ -38,7 +44,7 @@ namespace KingdomApi.Models
         public Kingdom Kingdom { get; set; }
     }
 
-    public enum ActionLevel
+    public enum Depth
     {
         [EnumMember(Value = "Own")]
         Own,
@@ -47,9 +53,15 @@ namespace KingdomApi.Models
         Clan,
 
         [EnumMember(Value = "Kingdom")]
-        Kingdom,
+        Kingdom
+    }
 
-        [EnumMember(Value = "All")]
-        All
+    public enum Effect
+    {
+        [EnumMember(Value = "Permit")]
+        Permit,
+
+        [EnumMember(Value = "Deny")]
+        Deny
     }
 }

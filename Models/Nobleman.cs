@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 using Microsoft.EntityFrameworkCore;
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace KingdomApi.Models
 {
@@ -37,7 +36,7 @@ namespace KingdomApi.Models
         public string PhoneNumber { get; set; }
         public DateTime DateOfBirth { get; set; }
 
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         [Column(TypeName = "varchar(24)")]
         public Gender Gender { get; set; } = Gender.PreferNotToSay;
 
