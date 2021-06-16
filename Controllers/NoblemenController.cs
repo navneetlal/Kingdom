@@ -72,6 +72,36 @@ namespace KingdomApi.Controllers
             return new OkObjectResult(response);
         }
 
+        [HttpPost]
+        [Route("{noblemanId}/add-responsibilities")]
+        public async Task<IActionResult> AddResponsibilities([FromRoute] int noblemanId, [FromBody] ICollection<Responsibility> responsibilities)
+        {
+            var nobleman = await _context.Noblemen
+                .Select(nobleman => new Nobleman
+                {
+                    NoblemanId = nobleman.NoblemanId,
+                    Responsibilities = nobleman.Responsibilities
+                        .Select(nobleman => new Responsibility
+                        {
+                            ResponsibilityId = nobleman.ResponsibilityId
+                        })
+                        .ToList()
+                })
+                .Where(nobleman => nobleman.NoblemanId.Equals(noblemanId))
+                .ToListAsync();
+            if (nobleman.Count == 0)
+            {
+                return StatusCode(StatusCodes.Status404NotFound);
+            }
+            nobleman[0].Responsibilities
+                .Concat(responsibilities)
+                .GroupBy(responsibility => responsibility.ResponsibilityId)
+                .Select(responsibility => responsibility.First());
+            _context.Noblemen.AddRange(nobleman);
+            await _context.SaveChangesAsync();
+            return new OkObjectResult(nobleman);
+        }
+
         [HttpPut]
         [Route("{noblemanId}")]
         public async Task<IActionResult> PutNobleman([FromRoute] int noblemanId, [FromBody] Nobleman nobleman)

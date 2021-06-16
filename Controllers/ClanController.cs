@@ -81,6 +81,33 @@ namespace KingdomApi.Controllers
             return new OkObjectResult(response);
         }
 
+        [HttpPost]
+        [Route("{clanId}/add-noblemen")]
+        public async Task<IActionResult> AddNoblemen([FromRoute] int clanId, [FromBody] ICollection<Nobleman> noblemen)
+        {
+            var clan = await _context.Clans
+                .Select(clan => new Clan
+                {
+                    ClanId = clan.ClanId,
+                    Noblemen = clan.Noblemen
+                        .Select(nobleman => new Nobleman
+                        {
+                            NoblemanId = nobleman.NoblemanId
+                        })
+                        .ToList()
+                })
+                .Where(clan => clan.ClanId.Equals(clanId))
+                .ToListAsync();
+            if (clan.Count == 0)
+            {
+                return StatusCode(StatusCodes.Status404NotFound);
+            }
+            clan[0].Noblemen.Concat(noblemen).GroupBy(nobleman => nobleman.NoblemanId).Select(nobleman => nobleman.First());
+            _context.Clans.AddRange(clan);
+            await _context.SaveChangesAsync();
+            return new OkObjectResult(clan);
+        }
+
         [HttpGet]
         [Route("{clanId}/responsibilities")]
         public async Task<IActionResult> GetClanResponsibilities([FromRoute] int clanId, [FromQuery] PaginationQuery query)
@@ -107,6 +134,36 @@ namespace KingdomApi.Controllers
                 }
             };
             return new OkObjectResult(response);
+        }
+
+        [HttpPost]
+        [Route("{clanId}/add-responsibilities")]
+        public async Task<IActionResult> AddResponsibilities([FromRoute] int clanId, [FromBody] ICollection<Responsibility> responsibilities)
+        {
+            var clan = await _context.Clans
+                .Select(clan => new Clan
+                {
+                    ClanId = clan.ClanId,
+                    Responsibilities = clan.Responsibilities
+                        .Select(nobleman => new Responsibility
+                        {
+                            ResponsibilityId = nobleman.ResponsibilityId
+                        })
+                        .ToList()
+                })
+                .Where(clan => clan.ClanId.Equals(clanId))
+                .ToListAsync();
+            if (clan.Count == 0)
+            {
+                return StatusCode(StatusCodes.Status404NotFound);
+            }
+            clan[0].Responsibilities
+                .Concat(responsibilities)
+                .GroupBy(responsibility => responsibility.ResponsibilityId)
+                .Select(responsibility => responsibility.First());
+            _context.Clans.AddRange(clan);
+            await _context.SaveChangesAsync();
+            return new OkObjectResult(clan);
         }
 
         [HttpPut]
