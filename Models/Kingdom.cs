@@ -18,7 +18,7 @@ namespace KingdomApi.Models
         public string Description { get; set; }
 
         public List<Clan> Clans { get; set; }
-        public List<Nobleman> Noblemen { get; set; }
+        public List<Noble> Nobles { get; set; }
         public List<Responsibility> Responsibilities { get; set; }
     }
 }

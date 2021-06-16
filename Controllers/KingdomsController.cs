@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,12 +14,12 @@ namespace KingdomApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class KingdomController : ControllerBase
+    public class KingdomsController : ControllerBase
     {
-        private readonly ILogger<KingdomController> _logger;
+        private readonly ILogger<KingdomsController> _logger;
         private readonly KingdomContext _context;
 
-        public KingdomController(ILogger<KingdomController> logger, KingdomContext context)
+        public KingdomsController(ILogger<KingdomsController> logger, KingdomContext context)
         {
             _logger = logger;
             _context = context;
@@ -89,7 +88,7 @@ namespace KingdomApi.Controllers
         }
 
         [HttpGet]
-        [Route("{kingdomId}/clan")]
+        [Route("{kingdomId}/clans")]
         public async Task<IActionResult> GetAllClan([FromRoute] int kingdomId, [FromQuery] PaginationQuery query)
         {
             if (query.PerPage > 100)
@@ -126,8 +125,8 @@ namespace KingdomApi.Controllers
         }
 
         [HttpGet]
-        [Route("{kingdomId}/nobleman")]
-        public async Task<IActionResult> GetAllNobleman([FromRoute] int kingdomId, [FromQuery] PaginationQuery query)
+        [Route("{kingdomId}/nobles")]
+        public async Task<IActionResult> GetAllNoble([FromRoute] int kingdomId, [FromQuery] PaginationQuery query)
         {
             if (query.PerPage > 100)
             {
@@ -135,18 +134,18 @@ namespace KingdomApi.Controllers
             }
             try
             {
-                var nobleman = _context.Noblemen.Where(nobleman => nobleman.KingdomId.Equals(kingdomId));
-                var totalCount = await nobleman.CountAsync();
-                var result = await nobleman
+                var noble = _context.Nobles.Where(noble => noble.KingdomId.Equals(kingdomId));
+                var totalCount = await noble.CountAsync();
+                var result = await noble
                     .Skip((query.Page - 1) * query.PerPage)
                     .Take(query.PerPage)
                     .AsNoTracking()
                     .ToListAsync();
-                var response = new ResponseObject<Nobleman>
+                var response = new ResponseObject<Noble>
                 {
                     Status = true,
                     Message = "Success",
-                    Response = new Response<Nobleman>
+                    Response = new Response<Noble>
                     {
                         Page = query.Page,
                         PerPage = query.PerPage,
@@ -156,7 +155,7 @@ namespace KingdomApi.Controllers
                 };
                 return new OkObjectResult(response);
             }
-            catch (System.Exception)
+            catch (Exception)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
@@ -237,24 +236,30 @@ namespace KingdomApi.Controllers
         }
 
         [HttpPost]
-        [Route("{kingdomId}/clan")]
+        [Route("{kingdomId}/clans")]
         public async Task<IActionResult> PostClan([FromRoute] int kingdomId, [FromBody] Clan clan)
         {
             clan.KingdomId = kingdomId;
             _context.Add(clan);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(ClanController.GetClanById), new { clanId = clan.ClanId }, clan);
+            return CreatedAtAction(nameof(ClansController.GetClanById), new { clanId = clan.ClanId }, clan);
         }
 
         [HttpPost]
-        [Route("{kingdomId}/nobleman")]
-        public async Task<IActionResult> PostNobleman([FromRoute] int kingdomId, [FromBody] Nobleman nobleman)
+        [Route("{kingdomId}/nobles")]
+        public async Task<IActionResult> PostNoble([FromRoute] int kingdomId, [FromBody] Noble noble)
         {
-            nobleman.Password = PasswordHashManager.HashPassword(nobleman.Password);
-            nobleman.KingdomId = kingdomId;
-            _context.Noblemen.Add(nobleman);
+            noble.KingdomId = kingdomId;
+            noble.NobleSecret = new NobleSecret
+            {
+                Username = noble.Username,
+                EmailAddress = noble.EmailAddress,
+                Password = PasswordHashManager.HashPassword(noble.Password)
+            };
+            _context.Nobles.Add(noble);
             await _context.SaveChangesAsync();
-            return new CreatedResult(nobleman.NoblemanId.ToString(), nobleman);
+            noble.NobleSecret = null;
+            return CreatedAtAction(nameof(ClansController.GetClanById), new { nobleId = noble.NobleId }, noble);
         }
 
         [HttpPost]

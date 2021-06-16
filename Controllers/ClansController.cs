@@ -13,12 +13,12 @@ namespace KingdomApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ClanController : ControllerBase
+    public class ClansController : ControllerBase
     {
-        private readonly ILogger<ClanController> _logger;
+        private readonly ILogger<ClansController> _logger;
         private readonly KingdomContext _context;
 
-        public ClanController(ILogger<ClanController> logger, KingdomContext context)
+        public ClansController(ILogger<ClansController> logger, KingdomContext context)
         {
             _logger = logger;
             _context = context;
@@ -35,7 +35,7 @@ namespace KingdomApi.Controllers
         {
             var clan = await _context.Clans
                 .Where(clan => clan.ClanId.Equals(clanId))
-                .Include(clan => clan.Noblemen)
+                .Include(clan => clan.Nobles)
                 .AsNoTracking()
                 .FirstAsync();
             var response = new ResponseObject<Clan>
@@ -51,26 +51,26 @@ namespace KingdomApi.Controllers
         }
 
         [HttpGet]
-        [Route("{clanId}/noblemen")]
-        public async Task<IActionResult> GetClanNoblemen([FromRoute] int clanId, [FromQuery] PaginationQuery query)
+        [Route("{clanId}/nobles")]
+        public async Task<IActionResult> GetClanNobles([FromRoute] int clanId, [FromQuery] PaginationQuery query)
         {
             if (query.PerPage > 100)
             {
                 return StatusCode(StatusCodes.Status413PayloadTooLarge);
             }
-            var noblemen = _context.Noblemen
-                .Include(nobleman => nobleman.Clans.Where(clan => clan.ClanId.Equals(clanId)));
-            var totalCount = await noblemen.CountAsync();
-            var result = await noblemen
+            var nobles = _context.Nobles
+                .Include(noble => noble.Clans.Where(clan => clan.ClanId.Equals(clanId)));
+            var totalCount = await nobles.CountAsync();
+            var result = await nobles
                 .Skip((query.Page - 1) * query.PerPage)
                 .Take(query.PerPage)
                 .AsNoTracking()
                 .ToListAsync();
-            var response = new ResponseObject<Nobleman>
+            var response = new ResponseObject<Noble>
             {
                 Status = true,
                 Message = "Success",
-                Response = new Response<Nobleman>
+                Response = new Response<Noble>
                 {
                     Page = query.Page,
                     PerPage = query.PerPage,
@@ -82,17 +82,17 @@ namespace KingdomApi.Controllers
         }
 
         [HttpPost]
-        [Route("{clanId}/add-noblemen")]
-        public async Task<IActionResult> AddNoblemen([FromRoute] int clanId, [FromBody] ICollection<Nobleman> noblemen)
+        [Route("{clanId}/add-nobles")]
+        public async Task<IActionResult> AddNobles([FromRoute] int clanId, [FromBody] ICollection<Noble> nobles)
         {
             var clan = await _context.Clans
                 .Select(clan => new Clan
                 {
                     ClanId = clan.ClanId,
-                    Noblemen = clan.Noblemen
-                        .Select(nobleman => new Nobleman
+                    Nobles = clan.Nobles
+                        .Select(noble => new Noble
                         {
-                            NoblemanId = nobleman.NoblemanId
+                            NobleId = noble.NobleId
                         })
                         .ToList()
                 })
@@ -102,7 +102,7 @@ namespace KingdomApi.Controllers
             {
                 return StatusCode(StatusCodes.Status404NotFound);
             }
-            clan[0].Noblemen.Concat(noblemen).GroupBy(nobleman => nobleman.NoblemanId).Select(nobleman => nobleman.First());
+            clan[0].Nobles.Concat(nobles).GroupBy(noble => noble.NobleId).Select(noble => noble.First());
             _context.Clans.AddRange(clan);
             await _context.SaveChangesAsync();
             return new OkObjectResult(clan);
@@ -145,9 +145,9 @@ namespace KingdomApi.Controllers
                 {
                     ClanId = clan.ClanId,
                     Responsibilities = clan.Responsibilities
-                        .Select(nobleman => new Responsibility
+                        .Select(noble => new Responsibility
                         {
-                            ResponsibilityId = nobleman.ResponsibilityId
+                            ResponsibilityId = noble.ResponsibilityId
                         })
                         .ToList()
                 })

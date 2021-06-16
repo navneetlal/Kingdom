@@ -17,7 +17,7 @@ namespace KingdomApi.Models
 
         public string ClanPurpose { get; set; }
 
-        public ICollection<Nobleman> Noblemen { get; set; }
+        public ICollection<Noble> Nobles { get; set; }
         public ICollection<Responsibility> Responsibilities { get; set; }
 
         public int KingdomId { get; set; }

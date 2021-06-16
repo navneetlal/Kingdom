@@ -1,5 +1,11 @@
 # Kingdom
 
+## TODO
+
+- [ ] Password reset
+- [ ] Email verification
+- [ ] Request limit for login route
+
 ## Issue
 
 In case of any problem in the application open an issue here at [https://github.com/navneetlal/kingdom/issues](https://github.com/navneetlal/kingdom/issues)

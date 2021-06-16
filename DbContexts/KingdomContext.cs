@@ -9,7 +9,7 @@ namespace KingdomApi
     {
         public DbSet<Kingdom> Kingdoms { get; set; }
         public DbSet<Clan> Clans { get; set; }
-        public DbSet<Nobleman> Noblemen { get; set; }
+        public DbSet<Noble> Nobles { get; set; }
         public DbSet<Responsibility> Responsibilities { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

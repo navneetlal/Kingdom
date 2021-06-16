@@ -5,24 +5,22 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
-using Microsoft.EntityFrameworkCore;
-
-
 namespace KingdomApi.Models
 {
-    [Table("noblemen")]
-    [Index(nameof(Username), IsUnique = true)]
-    [Index(nameof(EmailAddress), IsUnique = true)]
-    public class Nobleman
+    [Table("nobles")]
+    public class Noble
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int NoblemanId { get; set; }
+        public int NobleId { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "{0} length must be between {2} and {1}.", MinimumLength = 2)]
         public string Username { get; set; }
 
+        [Required]
+        [StringLength(64, ErrorMessage = "{0} length must be between {2} and {1}.", MinimumLength = 8)]
+        [NotMapped]
         public string Password { get; set; }
 
         [Required]
@@ -34,6 +32,7 @@ namespace KingdomApi.Models
 
         [Phone]
         public string PhoneNumber { get; set; }
+
         public DateTime DateOfBirth { get; set; }
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
@@ -51,8 +50,9 @@ namespace KingdomApi.Models
         public string Country { get; set; }
         public int PostalCode { get; set; }
 
-        public ICollection<Responsibility> Responsibilities { get; set; }
+        public NobleSecret NobleSecret { get; set; }
 
+        public ICollection<Responsibility> Responsibilities { get; set; }
 
         public ICollection<Clan> Clans { get; set; }
 

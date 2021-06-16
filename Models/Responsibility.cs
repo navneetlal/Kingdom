@@ -37,11 +37,23 @@ namespace KingdomApi.Models
         [Column(TypeName = "jsonb")]
         public JsonDocument Condition { get; set; }
 
+        [Column(TypeName = "jsonb")]
+        public Obligation Obligation { get; set; }
+
+        [Range(1, 100, ErrorMessage = "{0} must be between {1} and {2}.")]
+        public short Priority { get; set; } = 1;
+
         public ICollection<Clan> Clans { get; set; }
-        public ICollection<Nobleman> Noblemen { get; set; }
+        public ICollection<Noble> Nobles { get; set; }
 
         public int KingdomId { get; set; }
         public Kingdom Kingdom { get; set; }
+    }
+
+    public class Obligation
+    {
+        public JsonDocument Permit { get; set; }
+        public JsonDocument Deny { get; set; }
     }
 
     public enum Depth
