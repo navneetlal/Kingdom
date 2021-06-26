@@ -138,7 +138,7 @@ namespace KingdomApi.Controllers
         public async Task<IActionResult> PutNoble([FromRoute] int nobleId, [FromBody] Noble noble)
         {
             noble.NobleId = nobleId;
-            _context.Nobles.Add(noble);    //! Handle password being updated
+            _context.Nobles.Add(noble);
             await _context.SaveChangesAsync();
             return new OkObjectResult(noble);
         }

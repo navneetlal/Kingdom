@@ -20,6 +20,7 @@
     <PackageReference Include="NWebsec.AspNetCore.Middleware" Version="3.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.4" />
     <PackageReference Include="Swashbuckle.AspNetCore.ReDoc" Version="6.1.4" />
+    <PackageReference Include="VaultSharp" Version="1.6.2.5" />
   </ItemGroup>
 
 
