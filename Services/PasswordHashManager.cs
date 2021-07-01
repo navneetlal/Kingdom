@@ -62,7 +62,8 @@ namespace KingdomApi.Services
 
                 hash = Decrypt(ciphertext, nonce, tag, Encoding.UTF8.GetBytes(key));
             }
-            return ByteArraysEqual(hashedPassword, hash);
+            return CryptographicOperations.FixedTimeEquals(hashedPassword, hash);
+            // return ByteArraysEqual(hashedPassword, hash);
         }
 
         private static byte[] Argon2idHashing(byte[] password, byte[] salt)
@@ -105,23 +106,23 @@ namespace KingdomApi.Services
 
         }
 
-        private static bool ByteArraysEqual(byte[] a, byte[] b)
-        {
-            if (a == null && b == null)
-            {
-                return true;
-            }
-            if (a == null || b == null || a.Length != b.Length)
-            {
-                return false;
-            }
-            bool areSame = true;
-            for (var i = 0; i < a.Length; i++)
-            {
-                areSame &= a[i] == b[i];
-            }
-            return areSame;
-        }
+        // private static bool ByteArraysEqual(byte[] a, byte[] b)
+        // {
+        //     if (a == null && b == null)
+        //     {
+        //         return true;
+        //     }
+        //     if (a == null || b == null || a.Length != b.Length)
+        //     {
+        //         return false;
+        //     }
+        //     bool areSame = true;
+        //     for (var i = 0; i < a.Length; i++)
+        //     {
+        //         areSame &= a[i] == b[i];
+        //     }
+        //     return areSame;
+        // }
 
     }
 }

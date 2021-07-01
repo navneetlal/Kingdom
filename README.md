@@ -1,5 +1,7 @@
 # Kingdom
 
+Identity and Access Management (IAM or IdAM), in general terms is a framework of policies and technologies for ensuring that the right users or person have the appropriate access to any resource.
+
 ## TODO
 
 - [ ] Password reset
