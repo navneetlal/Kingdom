@@ -11,6 +11,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 
+using Serilog;
+
 namespace KingdomApi
 {
     public class Startup
@@ -90,6 +92,12 @@ namespace KingdomApi
                 c.DocumentTitle = "REDOC API Documentation";
                 c.SpecUrl = "/swagger/v1/swagger.json";
             });
+
+            // Write streamlined request completion events, instead of the more verbose ones from the framework.
+            // To use the default framework request logging instead, remove this line and set the "Microsoft"
+            // level in appsettings.json to "Information".
+            app.UseSerilogRequestLogging();
+
             app.UseRouting();
 
 

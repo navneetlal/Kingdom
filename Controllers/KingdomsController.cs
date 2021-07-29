@@ -240,9 +240,9 @@ namespace KingdomApi.Controllers
         public async Task<IActionResult> PostClan([FromRoute] int kingdomId, [FromBody] Clan clan)
         {
             clan.KingdomId = kingdomId;
-            _context.Add(clan);
+            _context.Clans.Add(clan);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(ClansController.GetClanById), new { clanId = clan.ClanId }, clan);
+            return Created("/clans/" + clan.ClanId, clan);
         }
 
         [HttpPost]
@@ -259,7 +259,8 @@ namespace KingdomApi.Controllers
             _context.Nobles.Add(noble);
             await _context.SaveChangesAsync();
             noble.NobleSecret = null;
-            return CreatedAtAction(nameof(ClansController.GetClanById), new { nobleId = noble.NobleId }, noble);
+            // return CreatedAtAction(nameof(NoblesController.GetNobleById), new { nobleId = noble.NobleId }, noble);
+            return Created("/nobles/" + noble.NobleId, noble);
         }
 
         [HttpPost]
@@ -269,7 +270,8 @@ namespace KingdomApi.Controllers
             responsibility.KingdomId = kingdomId;
             _context.Responsibilities.Add(responsibility);
             await _context.SaveChangesAsync();
-            return new CreatedResult(responsibility.ResponsibilityId.ToString(), responsibility);
+            // return new CreatedResult(responsibility.ResponsibilityId.ToString(), responsibility);
+            return Created("/responsibilities/" + responsibility.ResponsibilityId, responsibility);
         }
 
         [HttpPut]
@@ -277,7 +279,7 @@ namespace KingdomApi.Controllers
         public async Task<IActionResult> PutKingdom([FromRoute] int kingdomId, [FromBody] Kingdom kingdom)
         {
             kingdom.KingdomId = kingdomId;
-            _context.Kingdoms.Add(kingdom);
+            _context.Kingdoms.Update(kingdom);
             await _context.SaveChangesAsync();
             return new OkObjectResult(kingdom);
         }

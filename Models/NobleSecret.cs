@@ -10,6 +10,7 @@ namespace KingdomApi.Models
     [Index(nameof(EmailAddress), IsUnique = true)]
     public class NobleSecret
     {
+        [Key]
         [Required]
         [StringLength(100, ErrorMessage = "{0} length must be between {2} and {1}.", MinimumLength = 2)]
         public string Username { get; set; }

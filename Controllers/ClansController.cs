@@ -23,12 +23,7 @@ namespace KingdomApi.Controllers
             _logger = logger;
             _context = context;
         }
-
-        /// <summary>
-        /// Get clan information
-        /// </summary>
-        /// <param name="clanId"></param>
-        /// <returns></returns>        
+      
         [HttpGet]
         [Route("{clanId}")]
         public async Task<IActionResult> GetClanById([FromRoute] int clanId)
@@ -171,7 +166,7 @@ namespace KingdomApi.Controllers
         public async Task<IActionResult> PutClan([FromRoute] int clanId, [FromBody] Clan clan)
         {
             clan.ClanId = clanId;
-            _context.Clans.Add(clan);
+            _context.Clans.Update(clan);
             await _context.SaveChangesAsync();
             return new OkObjectResult(clan);
         }

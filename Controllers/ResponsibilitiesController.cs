@@ -48,7 +48,7 @@ namespace KingdomApi.Controllers
         public async Task<IActionResult> PutResponsibility([FromRoute] int responsibilityId, [FromBody] Responsibility responsibility)
         {
             responsibility.ResponsibilityId = responsibilityId;
-            _context.Responsibilities.Add(responsibility);
+            _context.Responsibilities.Update(responsibility);
             await _context.SaveChangesAsync();
             return new OkObjectResult(responsibility);
         }

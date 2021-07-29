@@ -40,7 +40,7 @@ namespace KingdomApi.Models
         [Column(TypeName = "jsonb")]
         public Obligation Obligation { get; set; }
 
-        [Range(1, 100, ErrorMessage = "{0} must be between {1} and {2}.")]
+        [Range(1, 1000, ErrorMessage = "{0} must be between {1} and {2}.")]
         public short Priority { get; set; } = 1;
 
         public ICollection<Clan> Clans { get; set; }

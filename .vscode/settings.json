@@ -3,6 +3,7 @@
     "Hmac",
     "Hsts",
     "Konscious",
+    "Serilog",
     "jsonb"
   ],
   "omnisharp.enableRoslynAnalyzers": true,
