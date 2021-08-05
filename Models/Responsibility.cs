@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -12,7 +13,7 @@ namespace KingdomApi.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ResponsibilityId { get; set; }
+        public Guid ResponsibilityId { get; set; }
 
         [Required]
         [StringLength(64, ErrorMessage = "{0} length must be between {2} and {1}.", MinimumLength = 2)]
@@ -46,7 +47,7 @@ namespace KingdomApi.Models
         public ICollection<Clan> Clans { get; set; }
         public ICollection<Noble> Nobles { get; set; }
 
-        public int KingdomId { get; set; }
+        public Guid KingdomId { get; set; }
         public Kingdom Kingdom { get; set; }
     }
 

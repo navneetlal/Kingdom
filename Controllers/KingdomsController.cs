@@ -64,7 +64,7 @@ namespace KingdomApi.Controllers
 
         [HttpGet]
         [Route("{kingdomId}")]
-        public async Task<IActionResult> GetKingdomById([FromRoute] int kingdomId)
+        public async Task<IActionResult> GetKingdomById([FromRoute] Guid kingdomId)
         {
             var kingdom = await _context.Kingdoms
                 .Where(kingdom => kingdom.KingdomId.Equals(kingdomId))
@@ -89,7 +89,7 @@ namespace KingdomApi.Controllers
 
         [HttpGet]
         [Route("{kingdomId}/clans")]
-        public async Task<IActionResult> GetAllClan([FromRoute] int kingdomId, [FromQuery] PaginationQuery query)
+        public async Task<IActionResult> GetAllClan([FromRoute] Guid kingdomId, [FromQuery] PaginationQuery query)
         {
             if (query.PerPage > 100)
             {
@@ -126,7 +126,7 @@ namespace KingdomApi.Controllers
 
         [HttpGet]
         [Route("{kingdomId}/nobles")]
-        public async Task<IActionResult> GetAllNoble([FromRoute] int kingdomId, [FromQuery] PaginationQuery query)
+        public async Task<IActionResult> GetAllNoble([FromRoute] Guid kingdomId, [FromQuery] PaginationQuery query)
         {
             if (query.PerPage > 100)
             {
@@ -172,7 +172,7 @@ namespace KingdomApi.Controllers
         /// <returns>Returns the list of responsibilities created inside the Kingdom</returns>
         [HttpGet]
         [Route("{kingdomId}/responsibilities")]
-        public async Task<IActionResult> GetAllResponsibilities([FromRoute] int kingdomId, [FromQuery] PaginationQuery query)
+        public async Task<IActionResult> GetAllResponsibilities([FromRoute] Guid kingdomId, [FromQuery] PaginationQuery query)
         {
             if (query.PerPage > 100)
             {
@@ -237,7 +237,7 @@ namespace KingdomApi.Controllers
 
         [HttpPost]
         [Route("{kingdomId}/clans")]
-        public async Task<IActionResult> PostClan([FromRoute] int kingdomId, [FromBody] Clan clan)
+        public async Task<IActionResult> PostClan([FromRoute] Guid kingdomId, [FromBody] Clan clan)
         {
             clan.KingdomId = kingdomId;
             _context.Clans.Add(clan);
@@ -247,7 +247,7 @@ namespace KingdomApi.Controllers
 
         [HttpPost]
         [Route("{kingdomId}/nobles")]
-        public async Task<IActionResult> PostNoble([FromRoute] int kingdomId, [FromBody] Noble noble)
+        public async Task<IActionResult> PostNoble([FromRoute] Guid kingdomId, [FromBody] Noble noble)
         {
             noble.KingdomId = kingdomId;
             noble.NobleSecret = new NobleSecret
@@ -265,7 +265,7 @@ namespace KingdomApi.Controllers
 
         [HttpPost]
         [Route("{kingdomId}/responsibilities")]
-        public async Task<IActionResult> PostResponsibility([FromRoute] int kingdomId, [FromBody] Responsibility responsibility)
+        public async Task<IActionResult> PostResponsibility([FromRoute] Guid kingdomId, [FromBody] Responsibility responsibility)
         {
             responsibility.KingdomId = kingdomId;
             _context.Responsibilities.Add(responsibility);
@@ -276,7 +276,7 @@ namespace KingdomApi.Controllers
 
         [HttpPut]
         [Route("{kingdomId}")]
-        public async Task<IActionResult> PutKingdom([FromRoute] int kingdomId, [FromBody] Kingdom kingdom)
+        public async Task<IActionResult> PutKingdom([FromRoute] Guid kingdomId, [FromBody] Kingdom kingdom)
         {
             kingdom.KingdomId = kingdomId;
             _context.Kingdoms.Update(kingdom);
@@ -286,7 +286,7 @@ namespace KingdomApi.Controllers
 
         [HttpDelete]
         [Route("{kingdomId}")]
-        public async Task<IActionResult> DeleteKingdom([FromRoute] int kingdomId)
+        public async Task<IActionResult> DeleteKingdom([FromRoute] Guid kingdomId)
         {
             var kingdom = new Kingdom
             {

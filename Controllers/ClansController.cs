@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,7 +27,7 @@ namespace KingdomApi.Controllers
       
         [HttpGet]
         [Route("{clanId}")]
-        public async Task<IActionResult> GetClanById([FromRoute] int clanId)
+        public async Task<IActionResult> GetClanById([FromRoute] Guid clanId)
         {
             var clan = await _context.Clans
                 .Where(clan => clan.ClanId.Equals(clanId))
@@ -47,7 +48,7 @@ namespace KingdomApi.Controllers
 
         [HttpGet]
         [Route("{clanId}/nobles")]
-        public async Task<IActionResult> GetClanNobles([FromRoute] int clanId, [FromQuery] PaginationQuery query)
+        public async Task<IActionResult> GetClanNobles([FromRoute] Guid clanId, [FromQuery] PaginationQuery query)
         {
             if (query.PerPage > 100)
             {
@@ -78,7 +79,7 @@ namespace KingdomApi.Controllers
 
         [HttpPost]
         [Route("{clanId}/add-nobles")]
-        public async Task<IActionResult> AddNobles([FromRoute] int clanId, [FromBody] ICollection<Noble> nobles)
+        public async Task<IActionResult> AddNobles([FromRoute] Guid clanId, [FromBody] ICollection<Noble> nobles)
         {
             var clan = await _context.Clans
                 .Select(clan => new Clan
@@ -105,7 +106,7 @@ namespace KingdomApi.Controllers
 
         [HttpGet]
         [Route("{clanId}/responsibilities")]
-        public async Task<IActionResult> GetClanResponsibilities([FromRoute] int clanId, [FromQuery] PaginationQuery query)
+        public async Task<IActionResult> GetClanResponsibilities([FromRoute] Guid clanId, [FromQuery] PaginationQuery query)
         {
             if (query.PerPage > 100)
             {
@@ -133,7 +134,7 @@ namespace KingdomApi.Controllers
 
         [HttpPost]
         [Route("{clanId}/add-responsibilities")]
-        public async Task<IActionResult> AddResponsibilities([FromRoute] int clanId, [FromBody] ICollection<Responsibility> responsibilities)
+        public async Task<IActionResult> AddResponsibilities([FromRoute] Guid clanId, [FromBody] ICollection<Responsibility> responsibilities)
         {
             var clan = await _context.Clans
                 .Select(clan => new Clan
@@ -163,7 +164,7 @@ namespace KingdomApi.Controllers
 
         [HttpPut]
         [Route("{clanId}")]
-        public async Task<IActionResult> PutClan([FromRoute] int clanId, [FromBody] Clan clan)
+        public async Task<IActionResult> PutClan([FromRoute] Guid clanId, [FromBody] Clan clan)
         {
             clan.ClanId = clanId;
             _context.Clans.Update(clan);
@@ -173,7 +174,7 @@ namespace KingdomApi.Controllers
 
         [HttpDelete]
         [Route("{clanId}")]
-        public async Task<IActionResult> DeleteClan([FromRoute] int clanId)
+        public async Task<IActionResult> DeleteClan([FromRoute] Guid clanId)
         {
             var clan = new Clan
             {

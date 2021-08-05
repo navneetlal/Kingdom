@@ -40,6 +40,7 @@ namespace KingdomApi
             //             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
             //         };
             //     });
+            services.AddHttpContextAccessor();
             services.AddDbContext<KingdomContext>();
             // services.AddRouting(options => options.LowercaseUrls = true);
             services.AddControllers()

@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Text.Json;
+using KingdomApi.Models;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace KingdomApi.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class InitialCreateTable : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -11,7 +13,7 @@ namespace KingdomApi.Migrations
                 name: "kingdoms",
                 columns: table => new
                 {
-                    kingdom_id = table.Column<long>(type: "bigint", nullable: false),
+                    kingdom_id = table.Column<Guid>(type: "uuid", nullable: false),
                     kingdom_name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     description = table.Column<string>(type: "text", nullable: true)
                 },
@@ -24,10 +26,10 @@ namespace KingdomApi.Migrations
                 name: "clans",
                 columns: table => new
                 {
-                    clan_id = table.Column<long>(type: "bigint", nullable: false),
+                    clan_id = table.Column<Guid>(type: "uuid", nullable: false),
                     clan_name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     clan_purpose = table.Column<string>(type: "text", nullable: true),
-                    kingdom_id = table.Column<long>(type: "bigint", nullable: false)
+                    kingdom_id = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -41,17 +43,16 @@ namespace KingdomApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "noblemen",
+                name: "nobles",
                 columns: table => new
                 {
-                    nobleman_id = table.Column<long>(type: "bigint", nullable: false),
+                    noble_id = table.Column<Guid>(type: "uuid", nullable: false),
                     username = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    password = table.Column<string>(type: "text", nullable: true),
                     full_name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     email_address = table.Column<string>(type: "text", nullable: true),
                     phone_number = table.Column<string>(type: "text", nullable: true),
                     date_of_birth = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    gender = table.Column<int>(type: "integer", nullable: false),
+                    gender = table.Column<string>(type: "varchar(24)", nullable: false),
                     organization_name = table.Column<string>(type: "text", nullable: true),
                     department = table.Column<string>(type: "text", nullable: true),
                     job_title = table.Column<string>(type: "text", nullable: true),
@@ -61,14 +62,14 @@ namespace KingdomApi.Migrations
                     city = table.Column<string>(type: "text", nullable: true),
                     state = table.Column<string>(type: "text", nullable: true),
                     country = table.Column<string>(type: "text", nullable: true),
-                    postal_code = table.Column<long>(type: "bigint", nullable: false),
-                    kingdom_id = table.Column<long>(type: "bigint", nullable: false)
+                    postal_code = table.Column<int>(type: "integer", nullable: false),
+                    kingdom_id = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_noblemen", x => x.nobleman_id);
+                    table.PrimaryKey("pk_nobles", x => x.noble_id);
                     table.ForeignKey(
-                        name: "fk_noblemen_kingdoms_kingdom_id",
+                        name: "fk_nobles_kingdoms_kingdom_id",
                         column: x => x.kingdom_id,
                         principalTable: "kingdoms",
                         principalColumn: "kingdom_id",
@@ -79,12 +80,16 @@ namespace KingdomApi.Migrations
                 name: "responsibilities",
                 columns: table => new
                 {
-                    responsibility_id = table.Column<long>(type: "bigint", nullable: false),
-                    responsibility_name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    resource_name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    action = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
-                    action_level = table.Column<int>(type: "integer", nullable: false),
-                    kingdom_id = table.Column<long>(type: "bigint", nullable: false)
+                    responsibility_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    responsibility_name = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    target = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    action = table.Column<string>(type: "character varying(24)", maxLength: 24, nullable: false),
+                    depth = table.Column<string>(type: "varchar(24)", nullable: false),
+                    effect = table.Column<string>(type: "varchar(24)", nullable: false),
+                    condition = table.Column<JsonDocument>(type: "jsonb", nullable: true),
+                    obligation = table.Column<Obligation>(type: "jsonb", nullable: true),
+                    priority = table.Column<short>(type: "smallint", nullable: false),
+                    kingdom_id = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -98,26 +103,46 @@ namespace KingdomApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "clan_nobleman",
+                name: "clan_noble",
                 columns: table => new
                 {
-                    clans_clan_id = table.Column<long>(type: "bigint", nullable: false),
-                    noblemen_nobleman_id = table.Column<long>(type: "bigint", nullable: false)
+                    clans_clan_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    nobles_noble_id = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_clan_nobleman", x => new { x.clans_clan_id, x.noblemen_nobleman_id });
+                    table.PrimaryKey("pk_clan_noble", x => new { x.clans_clan_id, x.nobles_noble_id });
                     table.ForeignKey(
-                        name: "fk_clan_nobleman_clans_clans_clan_id",
+                        name: "fk_clan_noble_clans_clans_clan_id",
                         column: x => x.clans_clan_id,
                         principalTable: "clans",
                         principalColumn: "clan_id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "fk_clan_nobleman_noblemen_noblemen_nobleman_id",
-                        column: x => x.noblemen_nobleman_id,
-                        principalTable: "noblemen",
-                        principalColumn: "nobleman_id",
+                        name: "fk_clan_noble_nobles_nobles_noble_id",
+                        column: x => x.nobles_noble_id,
+                        principalTable: "nobles",
+                        principalColumn: "noble_id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "noble_secrets",
+                columns: table => new
+                {
+                    username = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    email_address = table.Column<string>(type: "text", nullable: true),
+                    password = table.Column<string>(type: "text", nullable: true),
+                    noble_id = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_noble_secrets", x => x.username);
+                    table.ForeignKey(
+                        name: "fk_noble_secrets_nobles_noble_id",
+                        column: x => x.noble_id,
+                        principalTable: "nobles",
+                        principalColumn: "noble_id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -125,8 +150,8 @@ namespace KingdomApi.Migrations
                 name: "clan_responsibility",
                 columns: table => new
                 {
-                    clans_clan_id = table.Column<long>(type: "bigint", nullable: false),
-                    responsibilities_responsibility_id = table.Column<long>(type: "bigint", nullable: false)
+                    clans_clan_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    responsibilities_responsibility_id = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -146,23 +171,23 @@ namespace KingdomApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "nobleman_responsibility",
+                name: "noble_responsibility",
                 columns: table => new
                 {
-                    noblemen_nobleman_id = table.Column<long>(type: "bigint", nullable: false),
-                    responsibilities_responsibility_id = table.Column<long>(type: "bigint", nullable: false)
+                    nobles_noble_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    responsibilities_responsibility_id = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_nobleman_responsibility", x => new { x.noblemen_nobleman_id, x.responsibilities_responsibility_id });
+                    table.PrimaryKey("pk_noble_responsibility", x => new { x.nobles_noble_id, x.responsibilities_responsibility_id });
                     table.ForeignKey(
-                        name: "fk_nobleman_responsibility_noblemen_noblemen_nobleman_id",
-                        column: x => x.noblemen_nobleman_id,
-                        principalTable: "noblemen",
-                        principalColumn: "nobleman_id",
+                        name: "fk_noble_responsibility_nobles_nobles_noble_id",
+                        column: x => x.nobles_noble_id,
+                        principalTable: "nobles",
+                        principalColumn: "noble_id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "fk_nobleman_responsibility_responsibilities_responsibilities_r",
+                        name: "fk_noble_responsibility_responsibilities_responsibilities_resp",
                         column: x => x.responsibilities_responsibility_id,
                         principalTable: "responsibilities",
                         principalColumn: "responsibility_id",
@@ -170,9 +195,9 @@ namespace KingdomApi.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "ix_clan_nobleman_noblemen_nobleman_id",
-                table: "clan_nobleman",
-                column: "noblemen_nobleman_id");
+                name: "ix_clan_noble_nobles_noble_id",
+                table: "clan_noble",
+                column: "nobles_noble_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_clan_responsibility_responsibilities_responsibility_id",
@@ -185,13 +210,31 @@ namespace KingdomApi.Migrations
                 column: "kingdom_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_nobleman_responsibility_responsibilities_responsibility_id",
-                table: "nobleman_responsibility",
+                name: "ix_noble_responsibility_responsibilities_responsibility_id",
+                table: "noble_responsibility",
                 column: "responsibilities_responsibility_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_noblemen_kingdom_id",
-                table: "noblemen",
+                name: "ix_noble_secrets_email_address",
+                table: "noble_secrets",
+                column: "email_address",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_noble_secrets_noble_id",
+                table: "noble_secrets",
+                column: "noble_id",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_noble_secrets_username",
+                table: "noble_secrets",
+                column: "username",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_nobles_kingdom_id",
+                table: "nobles",
                 column: "kingdom_id");
 
             migrationBuilder.CreateIndex(
@@ -203,22 +246,25 @@ namespace KingdomApi.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "clan_nobleman");
+                name: "clan_noble");
 
             migrationBuilder.DropTable(
                 name: "clan_responsibility");
 
             migrationBuilder.DropTable(
-                name: "nobleman_responsibility");
+                name: "noble_responsibility");
+
+            migrationBuilder.DropTable(
+                name: "noble_secrets");
 
             migrationBuilder.DropTable(
                 name: "clans");
 
             migrationBuilder.DropTable(
-                name: "noblemen");
+                name: "responsibilities");
 
             migrationBuilder.DropTable(
-                name: "responsibilities");
+                name: "nobles");
 
             migrationBuilder.DropTable(
                 name: "kingdoms");

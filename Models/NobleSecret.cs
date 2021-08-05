@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -20,7 +21,7 @@ namespace KingdomApi.Models
 
         public string Password { get; set; }
 
-        public int NobleId { get; set; }
+        public Guid NobleId { get; set; }
         public Noble Noble { get; set; }
     }
 }

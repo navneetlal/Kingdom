@@ -25,6 +25,16 @@ namespace KingdomApi
             {
                 CreateHostBuilder(args).Build().Run();
 
+                // var host = CreateHostBuilder(args).Build();
+
+                // using (var scope = host.Services.CreateScope())
+                // {
+                //     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                //     db.Database.Migrate();
+                // }
+
+                // host.Run();
+
                 Log.Information("Stopped cleanly");
                 return 0;
             }
@@ -45,6 +55,10 @@ namespace KingdomApi
                     .ReadFrom.Configuration(context.Configuration)
                     .ReadFrom.Services(services)
                     .Enrich.FromLogContext()
+                    // .Enrich.WithCorrelationId()
+                    .Enrich.WithCorrelationIdHeader("X-Correlation-ID")
+                    .Enrich.WithClientIp()
+                    .Enrich.WithClientAgent()
                     .WriteTo.Console())
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

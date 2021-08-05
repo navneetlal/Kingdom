@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,7 +27,7 @@ namespace KingdomApi.Controllers
 
         [HttpGet]
         [Route("{nobleId}")]
-        public async Task<IActionResult> GetNobleById([FromRoute] int nobleId)
+        public async Task<IActionResult> GetNobleById([FromRoute] Guid nobleId)
         {
             var noble = await _context.Nobles
                 .Where(noble => noble.NobleId.Equals(nobleId))
@@ -46,7 +47,7 @@ namespace KingdomApi.Controllers
 
         [HttpGet]
         [Route("{nobleId}/responsibilities")]
-        public async Task<IActionResult> GetNoblesResponsibilities([FromRoute] int nobleId, [FromQuery] PaginationQuery query)
+        public async Task<IActionResult> GetNoblesResponsibilities([FromRoute] Guid nobleId, [FromQuery] PaginationQuery query)
         {
             if (query.PerPage > 100)
             {
@@ -74,7 +75,7 @@ namespace KingdomApi.Controllers
 
         [HttpPost]
         [Route("{nobleId}/add-responsibilities")]
-        public async Task<IActionResult> AddResponsibilities([FromRoute] int nobleId, [FromBody] ICollection<Responsibility> responsibilities)
+        public async Task<IActionResult> AddResponsibilities([FromRoute] Guid nobleId, [FromBody] ICollection<Responsibility> responsibilities)
         {
             var noble = await _context.Nobles
                 .Select(noble => new Noble
@@ -104,7 +105,7 @@ namespace KingdomApi.Controllers
 
         [HttpPost]
         [Route("{nobleId}/remove-responsibilities")]
-        public async Task<IActionResult> RemoveResponsibilities([FromRoute] int nobleId, [FromBody] ICollection<Responsibility> responsibilities)
+        public async Task<IActionResult> RemoveResponsibilities([FromRoute] Guid nobleId, [FromBody] ICollection<Responsibility> responsibilities)
         {
             var noble = await _context.Nobles
                 .Select(noble => new Noble
@@ -135,7 +136,7 @@ namespace KingdomApi.Controllers
 
         [HttpPut]
         [Route("{nobleId}")]
-        public async Task<IActionResult> PutNoble([FromRoute] int nobleId, [FromBody] Noble noble)
+        public async Task<IActionResult> PutNoble([FromRoute] Guid nobleId, [FromBody] Noble noble)
         {
             noble.NobleId = nobleId;
             _context.Nobles.Update(noble);
@@ -145,7 +146,7 @@ namespace KingdomApi.Controllers
 
         [HttpDelete]
         [Route("{nobleId}")]
-        public async Task<IActionResult> DeleteNoble([FromRoute] int nobleId)
+        public async Task<IActionResult> DeleteNoble([FromRoute] Guid nobleId)
         {
             var noble = new Noble
             {
