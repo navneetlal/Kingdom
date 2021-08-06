@@ -13,6 +13,8 @@ using Microsoft.OpenApi.Models;
 
 using Serilog;
 
+using KingdomApi.Middleware;
+
 namespace KingdomApi
 {
     public class Startup
@@ -76,15 +78,16 @@ namespace KingdomApi
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseMiddleware<RequestLogContextMiddleware>();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
             app.UsePathBase("/");
-            
+
             app.UseSwagger();
-            app.UseSwaggerUI(c => 
+            app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
@@ -111,7 +114,7 @@ namespace KingdomApi
             app.UseXContentTypeOptions();
             app.UseXfo(xfo => xfo.Deny());
             app.UseXXssProtection(xss => xss.EnabledWithBlockMode());
-            
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

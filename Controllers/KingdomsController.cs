@@ -41,10 +41,10 @@ namespace KingdomApi.Controllers
                     .Take(query.PerPage)
                     .AsNoTracking()
                     .ToListAsync();
-                var response = new ResponseObject<Kingdom>
+                var response = new ResponseObject<Kingdom>(HttpContext)
                 {
-                    Status = true,
-                    Message = "Success",
+                    Status = StatusCodes.Status200OK,
+                    Title = "Success",
                     Response = new Response<Kingdom>
                     {
                         Page = query.Page,
@@ -71,14 +71,14 @@ namespace KingdomApi.Controllers
                 .Include(kingdom => kingdom.Clans)
                 .AsNoTracking()
                 .ToListAsync();
-            if(kingdom.Count == 0)
+            if (kingdom.Count == 0)
             {
                 return StatusCode(StatusCodes.Status404NotFound);
             }
-            var response = new ResponseObject<Kingdom>
+            var response = new ResponseObject<Kingdom>(HttpContext)
             {
-                Status = true,
-                Message = "Success",
+                Status = StatusCodes.Status200OK,
+                Title = "Success",
                 Response = new Response<Kingdom>
                 {
                     Results = kingdom
@@ -104,10 +104,10 @@ namespace KingdomApi.Controllers
                     .Take(query.PerPage)
                     .AsNoTracking()
                     .ToListAsync();
-                var response = new ResponseObject<Clan>
+                var response = new ResponseObject<Clan>(HttpContext)
                 {
-                    Status = true,
-                    Message = "Success",
+                    Status = StatusCodes.Status200OK,
+                    Title = "Success",
                     Response = new Response<Clan>
                     {
                         Page = query.Page,
@@ -141,10 +141,10 @@ namespace KingdomApi.Controllers
                     .Take(query.PerPage)
                     .AsNoTracking()
                     .ToListAsync();
-                var response = new ResponseObject<Noble>
+                var response = new ResponseObject<Noble>(HttpContext)
                 {
-                    Status = true,
-                    Message = "Success",
+                    Status = StatusCodes.Status200OK,
+                    Title = "Success",
                     Response = new Response<Noble>
                     {
                         Page = query.Page,
@@ -188,10 +188,10 @@ namespace KingdomApi.Controllers
                     .Take(query.PerPage)
                     .AsNoTracking()
                     .ToListAsync();
-                var response = new ResponseObject<Responsibility>
+                var response = new ResponseObject<Responsibility>(HttpContext)
                 {
-                    Status = true,
-                    Message = "Success",
+                    Status = StatusCodes.Status200OK,
+                    Title = "Success",
                     Response = new Response<Responsibility>
                     {
                         Page = query.Page,

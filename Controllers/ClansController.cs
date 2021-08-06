@@ -24,7 +24,7 @@ namespace KingdomApi.Controllers
             _logger = logger;
             _context = context;
         }
-      
+
         [HttpGet]
         [Route("{clanId}")]
         public async Task<IActionResult> GetClanById([FromRoute] Guid clanId)
@@ -34,10 +34,10 @@ namespace KingdomApi.Controllers
                 .Include(clan => clan.Nobles)
                 .AsNoTracking()
                 .FirstAsync();
-            var response = new ResponseObject<Clan>
+            var response = new ResponseObject<Clan>(HttpContext)
             {
-                Status = true,
-                Message = "Success",
+                Status = StatusCodes.Status200OK,
+                Title = "Success",
                 Response = new Response<Clan>
                 {
                     Results = new List<Clan> { clan }
@@ -62,10 +62,10 @@ namespace KingdomApi.Controllers
                 .Take(query.PerPage)
                 .AsNoTracking()
                 .ToListAsync();
-            var response = new ResponseObject<Noble>
+            var response = new ResponseObject<Noble>(HttpContext)
             {
-                Status = true,
-                Message = "Success",
+                Status = StatusCodes.Status200OK,
+                Title = "Success",
                 Response = new Response<Noble>
                 {
                     Page = query.Page,
@@ -120,10 +120,10 @@ namespace KingdomApi.Controllers
                 .Take(query.PerPage)
                 .AsNoTracking()
                 .ToListAsync();
-            var response = new ResponseObject<Responsibility>
+            var response = new ResponseObject<Responsibility>(HttpContext)
             {
-                Status = true,
-                Message = "Success",
+                Status = StatusCodes.Status200OK,
+                Title = "Success",
                 Response = new Response<Responsibility>
                 {
                     Results = result

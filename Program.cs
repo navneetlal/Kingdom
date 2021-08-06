@@ -1,10 +1,9 @@
 using System;
-
+using System.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
 using Serilog;
-using Serilog.Events;
 
 namespace KingdomApi
 {
@@ -12,9 +11,6 @@ namespace KingdomApi
     {
         public static int Main(string[] args)
         {
-            // The initial "bootstrap" logger is able to log errors during start-up. It's completely replaced by the
-            // logger configured in `UseSerilog()` below, once configuration and dependency-injection have both been
-            // set up successfully.
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console()
                 .CreateBootstrapLogger();
@@ -23,6 +19,7 @@ namespace KingdomApi
 
             try
             {
+                Activity.DefaultIdFormat = ActivityIdFormat.W3C;
                 CreateHostBuilder(args).Build().Run();
 
                 // var host = CreateHostBuilder(args).Build();
@@ -55,8 +52,6 @@ namespace KingdomApi
                     .ReadFrom.Configuration(context.Configuration)
                     .ReadFrom.Services(services)
                     .Enrich.FromLogContext()
-                    // .Enrich.WithCorrelationId()
-                    .Enrich.WithCorrelationIdHeader("X-Correlation-ID")
                     .Enrich.WithClientIp()
                     .Enrich.WithClientAgent()
                     .WriteTo.Console())

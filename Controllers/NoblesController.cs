@@ -33,10 +33,10 @@ namespace KingdomApi.Controllers
                 .Where(noble => noble.NobleId.Equals(nobleId))
                 .AsNoTracking()
                 .FirstAsync();
-            var response = new ResponseObject<Noble>
+            var response = new ResponseObject<Noble>(HttpContext)
             {
-                Status = true,
-                Message = "Success",
+                Status = StatusCodes.Status200OK,
+                Title = "Success",
                 Response = new Response<Noble>
                 {
                     Results = new List<Noble> { noble }
@@ -61,10 +61,10 @@ namespace KingdomApi.Controllers
                 .Take(query.PerPage)
                 .AsNoTracking()
                 .ToListAsync();
-            var response = new ResponseObject<Responsibility>
+            var response = new ResponseObject<Responsibility>(HttpContext)
             {
-                Status = true,
-                Message = "Success",
+                Status = StatusCodes.Status200OK,
+                Title = "Success",
                 Response = new Response<Responsibility>
                 {
                     Results = result
